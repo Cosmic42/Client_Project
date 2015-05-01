@@ -6,7 +6,10 @@ public class Main {
 		
 		Interface window = new Interface();
 		
+		ImageIcon logo = new ImageIcon("src/NS_Icon.png");
+		
 		//GUI setup
+		window.setIconImage(logo.getImage());
 		window.setSize(800, 600);
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
