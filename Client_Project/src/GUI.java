@@ -4,13 +4,13 @@ import java.awt.GridLayout;
 
 import javax.swing.*;
 
-public class Interface extends JFrame {
+public class GUI extends JFrame {
 
 //----------------------------------------------------Program GUI-----------------------------------------------------\\
-	public Interface() {
+	public GUI() {
 		super("Book Inventory");
 
-		setLayout(new GridLayout(1, 2));
+		JTabbedPane tabs = new JTabbedPane();
 
 		JPanel main = new JPanel();
 		main.setLayout(new BorderLayout());
@@ -19,8 +19,11 @@ public class Interface extends JFrame {
 		buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
 
 		main.add(buttons, BorderLayout.NORTH);
+		
+		tabs.addTab("asdfasdfasdfasd", main);
+		tabs.addTab("Books", buttons);
 
-		add(main);
+		add(tabs);
 
 	}
 }

@@ -4,7 +4,7 @@ public class Main {
 
 	public static void main(String[] args){
 		
-		Interface window = new Interface();
+		GUI window = new GUI();
 		
 		ImageIcon logo = new ImageIcon("src/NS_Icon.png");
 		
