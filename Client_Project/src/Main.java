@@ -1,8 +1,10 @@
 import javax.swing.*;
+import java.io.*;
+import java.util.ArrayList;
 
 public class Main {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws IOException{
 		
 		GUI window = new GUI();
 		
@@ -10,11 +12,20 @@ public class Main {
 		
 		//GUI setup
 		window.setIconImage(logo.getImage());
-		window.setSize(800, 600);
+		window.setSize(800, 500);
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
 		window.setLocationRelativeTo(null);
-	
+		
+		FileReader reader = new FileReader("Database/database.txt");
+		BufferedReader reader2 = new BufferedReader(reader);
+		ArrayList<InventoryObject> database = new ArrayList<InventoryObject>();
+        String line;
+		while((line = reader2.readLine()) != null)
+            database.add(new InventoryObject(line));
+      
+        reader2.close();
+        
 	}
 }

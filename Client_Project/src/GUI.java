@@ -12,16 +12,18 @@ public class GUI extends JFrame {
 
 		JTabbedPane tabs = new JTabbedPane();
 
-		JPanel main = new JPanel();
-		main.setLayout(new BorderLayout());
+		JPanel inventoryTab = new JPanel();
+		inventoryTab.setLayout(new BorderLayout());
 
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
-
-		main.add(buttons, BorderLayout.NORTH);
+		JPanel checkOutTab = new JPanel();
+		checkOutTab.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		tabs.addTab("asdfasdfasdfasd", main);
-		tabs.addTab("Books", buttons);
+		JPanel modInventoryTab = new JPanel();
+		modInventoryTab.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
+		tabs.addTab("Inventory", inventoryTab);
+		tabs.addTab("Book Check-Out", checkOutTab);
+		tabs.addTab("Modify Book information", modInventoryTab);
 
 		add(tabs);
 
