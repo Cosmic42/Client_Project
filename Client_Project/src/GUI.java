@@ -55,9 +55,9 @@ public class GUI extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTHWEST; 
 
-		setGrid(c, 0, 1, 0, .01);
-		viewBooks.add((new JTextArea("asdfasdfasdf")),c);
 		c.fill = GridBagConstraints.HORIZONTAL;
+		setGrid(c, 0, 1, 0, .01);
+		viewBooks.add((new JTextArea("asdf")),c);
 		setGrid(c, 0, 0, 0, 0);
 		viewBooks.add(new JLabel("Search"),c);
 
