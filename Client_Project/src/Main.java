@@ -17,15 +17,6 @@ public class Main {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
 		window.setLocationRelativeTo(null);
-		
-		FileReader reader = new FileReader("Database/database.txt");
-		BufferedReader reader2 = new BufferedReader(reader);
-		ArrayList<InventoryObject> database = new ArrayList<InventoryObject>();
-        String line;
-		while((line = reader2.readLine()) != null)
-            database.add(new InventoryObject(line));
-      
-        reader2.close();
-        
+		        
 	}
 }
