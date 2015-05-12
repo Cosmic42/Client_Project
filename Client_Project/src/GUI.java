@@ -8,7 +8,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
 //import javax.imageio.IIOException;
@@ -46,6 +49,8 @@ public class GUI extends JFrame {
 	}
 
 	public void setPanels() {
+		GUIHandler handler = new GUIHandler();
+		
 		JScrollPane list = new JScrollPane(scrollList, 
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -57,7 +62,10 @@ public class GUI extends JFrame {
 
 		c.fill = GridBagConstraints.HORIZONTAL;
 		setGrid(c, 0, 1, 0, .01);
-		viewBooks.add((new JTextArea("asdf")),c);
+		
+		JTextField search = new JTextField();
+		search.getDocument().addDocumentListener(handler);
+		viewBooks.add(search,c);
 		setGrid(c, 0, 0, 0, 0);
 		viewBooks.add(new JLabel("Search"),c);
 
@@ -68,6 +76,7 @@ public class GUI extends JFrame {
 		inventoryTab.setLayout(new GridLayout(1, 2));
 		inventoryTab.add(viewBooks);
 		
+		viewData.setLayout(new GridBagLayout());
 		viewData.add(new JButton("Herro"));
 		
 		inventoryTab.add(viewData);
@@ -80,11 +89,42 @@ public class GUI extends JFrame {
 		tabs.addTab("Modify Book information", modInventoryTab);
 
 		add(tabs);
-
+				
 	}
 
 	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
 		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
 	}
-	
+
+	public void updateJList(){
+		
+	}
+
+
+//Second Class-------------------------------------------------------------------------\\
+
+public class GUIHandler implements ActionListener, DocumentListener{
+
+	public void actionPerformed(ActionEvent event) {
+		System.out.println("asdf");
+		
+	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		updateJList();
+		
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		updateJList();
+		
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		updateJList();
+		
+	}
+ 
+}
+
 }
