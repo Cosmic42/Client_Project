@@ -53,8 +53,10 @@ public class GUI extends JFrame {
 		
 	}
 
+	//Panel Setup
 	public void setPanels() {
 		
+		//Adding selectionlisteners
 		scrollList.addListSelectionListener(handler);
 		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
@@ -62,7 +64,7 @@ public class GUI extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 				
-		//Setting layout for the first tab
+		//Setting layout for the first tab with GridBagLayout
 		viewBooks.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTHWEST; 
@@ -70,6 +72,7 @@ public class GUI extends JFrame {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		setGrid(c, 0, 1, 0, .01);
 		
+		//Adding Labels for search and JList
 		search.getDocument().addDocumentListener(handler);
 		viewBooks.add(search,c);
 		setGrid(c, 0, 0, 0, 0);
@@ -79,31 +82,34 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 2, 1, 1);
 		viewBooks.add(list, c);
 
+		//Display Information. The next blocks of code is just adding JLabels and JTextFields. May be changed to use BoxLayout
+		viewData.setLayout(new GridBagLayout());
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.CENTER; 
-
-		viewData.setLayout(new GridBagLayout());
+		setGrid(c, 0, 0, 0, 0);
+		viewData.add(new JLabel("   Book Information:   "),c);
+		
 		viewNum.setEditable(false);
-		setGrid(c, 1, 0, 0, 0);
+		setGrid(c, 1, 1, 0, 0);
 		viewData.add(viewNum, c);
-		setGrid(c, 0, 0, 0, .1);
-		viewData.add(new JLabel("   Number checked out:   "),c);
+		setGrid(c, 0, 1, 0, .5);
+		viewData.add(new JLabel("   Total Number:   "),c);
 
 		viewPrice.setEditable(false);
-		setGrid(c, 1, 1, 0, .1);
+		setGrid(c, 1, 2, 0, 0);
 		viewData.add(viewPrice, c);
-		setGrid(c, 0, 1, 0, 0);
+		setGrid(c, 0, 2, 0, .5);
 		viewData.add(new JLabel("   Book Price   "),c);
 
 		viewISBN.setEditable(false);
-		setGrid(c, 1, 2, 0, .1);
+		setGrid(c, 1, 3, 0, 0);
 		viewData.add(viewISBN, c);
-		setGrid(c, 0, 2, 0, 0);
+		setGrid(c, 0, 3, 0, .5);
 		viewData.add(new JLabel("   ISBN:   "),c);
 
 		
-		inventoryTab.setLayout(new GridLayout(1, 2));
-		//inventoryTab.add(viewBooks);		
+		inventoryTab.setLayout(new GridLayout(1, 2));		
 		inventoryTab.add(viewData);
 		
 		//Layouts for the other tabs WIP
@@ -122,8 +128,8 @@ public class GUI extends JFrame {
 	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
 		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
 	}
-	
-	//List filter
+		
+	//Function searches through the database and adds them to the list model
 	public void searchJList(){
         filter.clear();
 		scrollList.removeListSelectionListener(handler);
@@ -148,7 +154,6 @@ public class GUI extends JFrame {
 public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
 
 	public void actionPerformed(ActionEvent event) {
-		//System.out.println("asdf");
 	}
 
 	//Action listeners for the search bar
@@ -164,7 +169,7 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 		searchJList();
 	}
 
-	//Update the information panel on the right
+	//Update the information panel on the right 
 	public void valueChanged(ListSelectionEvent event) {
 		if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
 			viewNum.setText(filter.elementAt(((scrollList.getSelectedIndex()))).getNumOut());
