@@ -1,33 +1,31 @@
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.awt.event.*;
 
-
-//import javax.imageio.IIOException;
+import javax.swing.event.*;
 import javax.swing.*;
 
 public class GUI extends JFrame {
 	
-	private JList scrollList;
+	///Fields, so that GUI Components can be used throughout the class
+	private JList<InventoryObject> scrollList;
 	private ArrayList<InventoryObject> database;
 	private JTabbedPane tabs;
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks, viewData;
-	
+	private DefaultListModel<InventoryObject> filter;
+	private JTextField search, viewNum, viewPrice, viewISBN; 
+	private GUIHandler handler;
+
 //----------------------------------------------------Program GUI-----------------------------------------------------\\
 	public GUI() throws IOException{
 		super("Book Inventory");
-
+		
+		handler = new GUIHandler();
+		
+		//Read the database
 		FileReader fileReader = new FileReader("Database/database.txt");
 		BufferedReader bufferReader = new BufferedReader(fileReader);
 		database = new ArrayList<InventoryObject>();
@@ -37,25 +35,34 @@ public class GUI extends JFrame {
       
         bufferReader.close();
 
-		scrollList = new JList(database.toArray());
+        //Initialize all the fields
+        this.setLayout(new GridLayout(1, 2));
+        filter = new DefaultListModel<InventoryObject>();
+      
+        for(InventoryObject i:database)
+            filter.addElement(i);
+        
+		scrollList = new JList<InventoryObject>(filter);
 		
 		tabs = new JTabbedPane();
 		inventoryTab = new JPanel(); viewBooks = new JPanel(); viewData = new JPanel(); viewBooks = new JPanel();
 		checkOutTab = new JPanel();
 		modInventoryTab = new JPanel();
-		
+		search = new JTextField(); viewNum = new JTextField(4); viewPrice = new JTextField(4); viewISBN = new JTextField(10);
 		setPanels();
-						
+		
 	}
 
 	public void setPanels() {
-		GUIHandler handler = new GUIHandler();
+		
+		scrollList.addListSelectionListener(handler);
+		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		JScrollPane list = new JScrollPane(scrollList, 
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		//list.setPreferredSize(new Dimension(390, 375));
-		
+				
+		//Setting layout for the first tab
 		viewBooks.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTHWEST; 
@@ -63,7 +70,6 @@ public class GUI extends JFrame {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		setGrid(c, 0, 1, 0, .01);
 		
-		JTextField search = new JTextField();
 		search.getDocument().addDocumentListener(handler);
 		viewBooks.add(search,c);
 		setGrid(c, 0, 0, 0, 0);
@@ -73,21 +79,42 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 2, 1, 1);
 		viewBooks.add(list, c);
 
-		inventoryTab.setLayout(new GridLayout(1, 2));
-		inventoryTab.add(viewBooks);
-		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.CENTER; 
+
 		viewData.setLayout(new GridBagLayout());
-		viewData.add(new JButton("Herro"));
+		viewNum.setEditable(false);
+		setGrid(c, 1, 0, 0, 0);
+		viewData.add(viewNum, c);
+		setGrid(c, 0, 0, 0, .1);
+		viewData.add(new JLabel("   Number checked out:   "),c);
+
+		viewPrice.setEditable(false);
+		setGrid(c, 1, 1, 0, .1);
+		viewData.add(viewPrice, c);
+		setGrid(c, 0, 1, 0, 0);
+		viewData.add(new JLabel("   Book Price   "),c);
+
+		viewISBN.setEditable(false);
+		setGrid(c, 1, 2, 0, .1);
+		viewData.add(viewISBN, c);
+		setGrid(c, 0, 2, 0, 0);
+		viewData.add(new JLabel("   ISBN:   "),c);
+
 		
+		inventoryTab.setLayout(new GridLayout(1, 2));
+		//inventoryTab.add(viewBooks);		
 		inventoryTab.add(viewData);
 		
+		//Layouts for the other tabs WIP
 		checkOutTab.setLayout(new FlowLayout(FlowLayout.CENTER));		
 		modInventoryTab.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
 		tabs.addTab("Inventory", inventoryTab);
 		tabs.addTab("Book Check-Out", checkOutTab);
 		tabs.addTab("Modify Book information", modInventoryTab);
-
+		
+		add(viewBooks);
 		add(tabs);
 				
 	}
@@ -95,34 +122,56 @@ public class GUI extends JFrame {
 	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
 		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
 	}
-
-	public void updateJList(){
-		
+	
+	//List filter
+	public void searchJList(){
+        filter.clear();
+		scrollList.removeListSelectionListener(handler);
+        for(InventoryObject i : database)
+			if(i.getName().toUpperCase().contains(search.getText().toUpperCase()))
+				filter.addElement(i);
+        refresh();
+        scrollList.addListSelectionListener(handler);
+		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
 	}
+	
+	public void refresh(){
+		viewNum.setText("");
+		viewPrice.setText("");
+		viewISBN.setText("");
 
+	}
+	
+//-----------------------------------------Nested Class for Event Listeners-------------------------------------------\\
 
-//Second Class-------------------------------------------------------------------------\\
-
-public class GUIHandler implements ActionListener, DocumentListener{
+public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
 
 	public void actionPerformed(ActionEvent event) {
-		System.out.println("asdf");
-		
+		//System.out.println("asdf");
 	}
 
-	public void changedUpdate(DocumentEvent arg0) {
-		updateJList();
-		
+	//Action listeners for the search bar
+	public void changedUpdate(DocumentEvent event) {
+		searchJList();
 	}
 
-	public void insertUpdate(DocumentEvent arg0) {
-		updateJList();
-		
+	public void insertUpdate(DocumentEvent event) {
+		searchJList();
 	}
 
-	public void removeUpdate(DocumentEvent arg0) {
-		updateJList();
-		
+	public void removeUpdate(DocumentEvent event) {
+		searchJList();
+	}
+
+	//Update the information panel on the right
+	public void valueChanged(ListSelectionEvent event) {
+		if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
+			viewNum.setText(filter.elementAt(((scrollList.getSelectedIndex()))).getNumOut());
+			viewPrice.setText(filter.elementAt((scrollList.getSelectedIndex())).getPrice());
+			viewISBN.setText(filter.elementAt((scrollList.getSelectedIndex())).getISBN());
+
+		}
 	}
  
 }
