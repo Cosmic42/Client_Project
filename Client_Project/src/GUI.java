@@ -82,32 +82,23 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 2, 1, 1);
 		viewBooks.add(list, c);
 
-		//Display Information. The next blocks of code is just adding JLabels and JTextFields. May be changed to use BoxLayout
-		viewData.setLayout(new GridBagLayout());
-
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.CENTER; 
-		setGrid(c, 0, 0, 0, 0);
-		viewData.add(new JLabel("   Book Information:   "),c);
+		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Changing to use SpringLayout
+		SpringLayout layout = new SpringLayout();
+		viewData.setLayout(layout);
+		
+		viewData.add(new JLabel("Book Information: "));
 		
 		viewNum.setEditable(false);
-		setGrid(c, 1, 1, 0, 0);
-		viewData.add(viewNum, c);
-		setGrid(c, 0, 1, 0, .5);
-		viewData.add(new JLabel("   Total Number:   "),c);
+		viewData.add(new JLabel("Total Number: "));
+		viewData.add(viewNum);
 
 		viewPrice.setEditable(false);
-		setGrid(c, 1, 2, 0, 0);
-		viewData.add(viewPrice, c);
-		setGrid(c, 0, 2, 0, .5);
-		viewData.add(new JLabel("   Book Price   "),c);
+		viewData.add(new JLabel("Book Price "));
+		viewData.add(viewPrice);
 
 		viewISBN.setEditable(false);
-		setGrid(c, 1, 3, 0, 0);
-		viewData.add(viewISBN, c);
-		setGrid(c, 0, 3, 0, .5);
-		viewData.add(new JLabel("   ISBN:   "),c);
-
+		viewData.add(new JLabel(" ISBN: "));
+		viewData.add(viewISBN);
 		
 		inventoryTab.setLayout(new GridLayout(1, 2));		
 		inventoryTab.add(viewData);
