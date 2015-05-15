@@ -16,7 +16,7 @@ public class GUI extends JFrame {
 	private JTabbedPane tabs;
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks, viewData;
 	private DefaultListModel filter;
-	private JTextField search, viewNum, viewPrice, viewISBN; 
+	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom; 
 	private GUIHandler handler;
 
 //----------------------------------------------------Program GUI-----------------------------------------------------\\
@@ -48,7 +48,8 @@ public class GUI extends JFrame {
 		inventoryTab = new JPanel(); viewBooks = new JPanel(); viewData = new JPanel(); viewBooks = new JPanel();
 		checkOutTab = new JPanel();
 		modInventoryTab = new JPanel();
-		search = new JTextField(); viewNum = new JTextField(4); viewPrice = new JTextField(4); viewISBN = new JTextField(10);
+		search = new JTextField(); viewNum = new JTextField(4); viewPrice = new JTextField(4); 
+		viewISBN = new JTextField(10); viewRoom = new JTextField(4);
 		setPanels();
 		
 	}
@@ -56,9 +57,10 @@ public class GUI extends JFrame {
 	//Panel Setup
 	public void setPanels() {
 		
-		JLabel label1 = new JLabel("Total Number of Books:   ");
-		JLabel label2 = new JLabel("Price:   ");
-		JLabel label3 = new JLabel("ISBN:   ");
+		JLabel label1 = new JLabel("# of Books: ");
+		JLabel label2 = new JLabel("Stored in: ");
+		JLabel label3 = new JLabel("Price: ");
+		JLabel label4 = new JLabel("ISBN: ");
 
 		//Adding selectionlisteners
 		scrollList.addListSelectionListener(handler);
@@ -87,45 +89,58 @@ public class GUI extends JFrame {
 		viewBooks.add(list, c);
 
 		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Changing to use SpringLayout
-		JPanel information = new JPanel();
-		GroupLayout layout = new GroupLayout(information);
-		information.setLayout(layout);
-		viewData.setLayout(new GridLayout(5,1));
-		viewData.add(new JLabel("Book Information:"));
+		
+		viewData.setLayout(new GridBagLayout());
+		JLabel panelTitle = new JLabel(" Book Information");
+		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
+		setGrid(c, 0, 0, 0, 0);
+		viewData.add(panelTitle, c);
 		
 		viewNum.setEditable(false);
+		viewRoom.setEditable(false);
 		viewPrice.setEditable(false);
 		viewISBN.setEditable(false);
 
 		//GroupLayout to set the information
+		JPanel information = new JPanel();
+		GroupLayout layout = new GroupLayout(information);
+		information.setLayout(layout);
+
+		layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
+
         layout.setHorizontalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                 .addComponent(label1)
                 .addComponent(label2)
-                .addComponent(label3))
+                .addComponent(label3)
+                .addComponent(label4))
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addComponent(viewNum)
+                .addComponent(viewRoom)
                 .addComponent(viewPrice)
                 .addComponent(viewISBN))
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
                 .addComponent(viewNum))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addGroup(layout.createParallelGroup()
                 .addComponent(label2)
-                .addComponent(viewPrice))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(viewRoom))
+            .addGroup(layout.createParallelGroup()
                 .addComponent(label3)
-                .addComponent(viewISBN))
+                .addComponent(viewPrice))
+            .addGroup(layout.createParallelGroup()
+                    .addComponent(label4)
+                    .addComponent(viewISBN))
         );
 
         //Add information to GUI and pad
-		viewData.add(information);
-		viewData.add(new JLabel(""));
-		viewData.add(new JLabel(""));
-		viewData.add(new JLabel(""));
+		setGrid(c, 0, 1, 1, 0);
+        viewData.add(information, c);
+		setGrid(c, 0, 2, 0, 1);
+		viewData.add(new JLabel(""), c);
 		inventoryTab.setLayout(new GridLayout(1, 2));		
 		inventoryTab.add(viewData);
 		
@@ -161,6 +176,7 @@ public class GUI extends JFrame {
 	
 	public void refresh(){
 		viewNum.setText("");
+		viewRoom.setText("");
 		viewPrice.setText("");
 		viewISBN.setText("");
 
@@ -190,6 +206,7 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 	public void valueChanged(ListSelectionEvent event) {
 		if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
 			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNumOut());
+			viewRoom.setText("Room " + ((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
 			viewPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
 			viewISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
 
@@ -200,8 +217,3 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 
 }
 
--- 
-DIVIDE BY ZERO!
-            0
-
-This message is now undefined.
