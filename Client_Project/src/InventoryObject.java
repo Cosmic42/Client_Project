@@ -3,7 +3,7 @@ public class InventoryObject {
 	private String name;
 	private String grade;
 	private String room;
-	private String numOut;
+	private String num;
 	private String price;
 	private String ISBN;
 	
@@ -12,7 +12,7 @@ public class InventoryObject {
 		name = data[0];
 		grade = data[1];
 		room = data[2];
-		numOut = data[3];
+		num = data[3];
 		price = data[4];
 		ISBN = data[5];
 	}
@@ -37,11 +37,11 @@ public class InventoryObject {
 	public void setRoom(String room) {
 		this.room = room;
 	}
-	public String getNumOut() {
-		return numOut;
+	public String getNum() {
+		return num;
 	}
-	public void setNumOut(String numOut) {
-		this.numOut = numOut;
+	public void setNum(String num) {
+		this.num = num;
 	}
 	public String getPrice() {
 		return price;
