@@ -11,11 +11,11 @@ import javax.swing.*;
 public class GUI extends JFrame {
 	
 	///Fields, so that GUI Components can be used throughout the class
-	private JList<InventoryObject> scrollList;
+	private JList scrollList;
 	private ArrayList<InventoryObject> database;
 	private JTabbedPane tabs;
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks, viewData;
-	private DefaultListModel<InventoryObject> filter;
+	private DefaultListModel filter;
 	private JTextField search, viewNum, viewPrice, viewISBN; 
 	private GUIHandler handler;
 
@@ -37,12 +37,12 @@ public class GUI extends JFrame {
 
         //Initialize all the fields
         this.setLayout(new GridLayout(1, 2));
-        filter = new DefaultListModel<InventoryObject>();
+        filter = new DefaultListModel();
       
         for(InventoryObject i:database)
             filter.addElement(i);
         
-		scrollList = new JList<InventoryObject>(filter);
+		scrollList = new JList(filter);
 		
 		tabs = new JTabbedPane();
 		inventoryTab = new JPanel(); viewBooks = new JPanel(); viewData = new JPanel(); viewBooks = new JPanel();
@@ -56,6 +56,10 @@ public class GUI extends JFrame {
 	//Panel Setup
 	public void setPanels() {
 		
+		JLabel label1 = new JLabel("Total Number of Books:   ");
+		JLabel label2 = new JLabel("Price:   ");
+		JLabel label3 = new JLabel("ISBN:   ");
+
 		//Adding selectionlisteners
 		scrollList.addListSelectionListener(handler);
 		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -83,23 +87,45 @@ public class GUI extends JFrame {
 		viewBooks.add(list, c);
 
 		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Changing to use SpringLayout
-		SpringLayout layout = new SpringLayout();
-		viewData.setLayout(layout);
-		
-		viewData.add(new JLabel("Book Information: "));
+		JPanel information = new JPanel();
+		GroupLayout layout = new GroupLayout(information);
+		information.setLayout(layout);
+		viewData.setLayout(new GridLayout(5,1));
+		viewData.add(new JLabel("Book Information:"));
 		
 		viewNum.setEditable(false);
-		viewData.add(new JLabel("Total Number: "));
-		viewData.add(viewNum);
-
 		viewPrice.setEditable(false);
-		viewData.add(new JLabel("Book Price "));
-		viewData.add(viewPrice);
-
 		viewISBN.setEditable(false);
-		viewData.add(new JLabel(" ISBN: "));
-		viewData.add(viewISBN);
-		
+
+		//GroupLayout to set the information
+        layout.setAutoCreateContainerGaps(true);
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                .addComponent(label1)
+                .addComponent(label2)
+                .addComponent(label3))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(viewNum)
+                .addComponent(viewPrice)
+                .addComponent(viewISBN))
+        );
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(label1)
+                .addComponent(viewNum))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(label2)
+                .addComponent(viewPrice))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(label3)
+                .addComponent(viewISBN))
+        );
+
+        //Add information to GUI and pad
+		viewData.add(information);
+		viewData.add(new JLabel(""));
+		viewData.add(new JLabel(""));
+		viewData.add(new JLabel(""));
 		inventoryTab.setLayout(new GridLayout(1, 2));		
 		inventoryTab.add(viewData);
 		
@@ -163,9 +189,9 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 	//Update the information panel on the right 
 	public void valueChanged(ListSelectionEvent event) {
 		if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
-			viewNum.setText(filter.elementAt(((scrollList.getSelectedIndex()))).getNumOut());
-			viewPrice.setText(filter.elementAt((scrollList.getSelectedIndex())).getPrice());
-			viewISBN.setText(filter.elementAt((scrollList.getSelectedIndex())).getISBN());
+			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNumOut());
+			viewPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
+			viewISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
 
 		}
 	}
@@ -173,3 +199,9 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 }
 
 }
+
+-- 
+DIVIDE BY ZERO!
+            0
+
+This message is now undefined.
