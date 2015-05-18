@@ -17,11 +17,13 @@ public class GUI extends JFrame {
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks;
 	private DefaultListModel filter;
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom; 
-	private JTextField modNum, modPrice, modISBN, modRoom; 
-
+	private JTextField modNum, modPrice, modISBN, modRoom;
+	private JTextField checkOut;
+	private JButton checkOutButton;
+	
 	private GUIHandler handler;
 
-//----------------------------------------------------Program GUI-----------------------------------------------------\\
+//----------------------------------------------------Constructor for GUI-----------------------------------------------------\\
 	public GUI() throws IOException{
 		super("Book Inventory");
 		
@@ -54,15 +56,18 @@ public class GUI extends JFrame {
 		viewISBN = new JTextField(10); viewRoom = new JTextField(4);
 		modNum = new JTextField(4); modPrice = new JTextField(4); 
 		modISBN = new JTextField(10); modRoom = new JTextField(4);
-
+		checkOutButton = new JButton("Request");
+		checkOut = new JTextField(4);
+		
 		setInventoryTab();
+		setCheckOutTab();
 		setModifyTab();
 		add(viewBooks);
 		add(tabs);
 
 	}
 
-	//Panel Setup
+//----------------------------------------------------Panel Setup-----------------------------------------------------\\
 	public void setInventoryTab() {		
 		JPanel viewData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
@@ -126,8 +131,8 @@ public class GUI extends JFrame {
                 .addComponent(viewNum)
                 .addComponent(viewRoom)
                 .addComponent(viewPrice)
-                .addComponent(viewISBN))
-        );
+                .addComponent(viewISBN)));
+       
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
@@ -140,8 +145,7 @@ public class GUI extends JFrame {
                 .addComponent(viewPrice))
             .addGroup(layout.createParallelGroup()
                     .addComponent(label4)
-                    .addComponent(viewISBN))
-        );
+                    .addComponent(viewISBN)));
 
         //Add information to GUI and pad
 		setGrid(c, 0, 1, 1, 0);
@@ -156,6 +160,51 @@ public class GUI extends JFrame {
 						
 	}
 
+	public void setCheckOutTab(){
+		JPanel modData = new JPanel();
+		JLabel label1 = new JLabel("# of Books: ");
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+
+		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Uses GridBagLayout and GroupLayout		
+		modData.setLayout(new GridBagLayout());
+		JLabel panelTitle = new JLabel(" Check out Books");
+		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
+		setGrid(c, 0, 0, 0, 0);
+		modData.add(panelTitle, c);
+		
+		//GroupLayout to set the information
+		JPanel information = new JPanel();
+		GroupLayout layout = new GroupLayout(information);
+		information.setLayout(layout);
+
+		layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+                .addComponent(label1)
+                .addComponent(checkOut)
+                .addComponent(checkOutButton));
+        	
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup()
+                .addComponent(label1)
+                .addComponent(checkOut)
+                .addComponent(checkOutButton)));
+                
+        //Add information to GUI and pad
+		setGrid(c, 0, 1, 1, 0);
+        modData.add(information, c);
+		setGrid(c, 0, 2, 0, 1);
+		modData.add(new JLabel(""), c);
+		checkOutTab.setLayout(new GridLayout(1, 2));		
+		checkOutTab.add(modData);
+		
+		tabs.addTab("Check-Out", checkOutTab);
+				
+	}
+	
 	public void setModifyTab(){
 		JPanel modData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
@@ -175,7 +224,10 @@ public class GUI extends JFrame {
 		modData.add(panelTitle, c);
 		
         modNum.addActionListener(handler);
-		
+        modRoom.addActionListener(handler);
+        modPrice.addActionListener(handler);
+        modISBN.addActionListener(handler);
+
 		//GroupLayout to set the information
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
@@ -194,8 +246,8 @@ public class GUI extends JFrame {
                 .addComponent(modNum)
                 .addComponent(modRoom)
                 .addComponent(modPrice)
-                .addComponent(modISBN))
-        );
+                .addComponent(modISBN)));
+        
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
@@ -208,8 +260,7 @@ public class GUI extends JFrame {
                 .addComponent(modPrice))
             .addGroup(layout.createParallelGroup()
                     .addComponent(label4)
-                    .addComponent(modISBN))
-        );
+                    .addComponent(modISBN)));
                 
         //Add information to GUI and pad
 		setGrid(c, 0, 1, 1, 0);
@@ -222,7 +273,9 @@ public class GUI extends JFrame {
 		tabs.addTab("Modify Inventory Tab", modInventoryTab);
 				
 	}
-	
+
+//----------------------------------------------GUI Relevant Functions-----------------------------------------------------\\
+
 	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
 		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
 	}
@@ -253,8 +306,19 @@ public class GUI extends JFrame {
 public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
 
 	public void actionPerformed(ActionEvent event) {
-		database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
+		if(event.getSource() == modNum)
+			database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
+		if(event.getSource() == modRoom)
+			database.get(scrollList.getSelectedIndex()).setNum(modRoom.getText());
+		if(event.getSource() == modPrice)
+			database.get(scrollList.getSelectedIndex()).setNum(modPrice.getText());
+		if(event.getSource() == modISBN)
+			database.get(scrollList.getSelectedIndex()).setNum(modISBN.getText());
 		viewNum.setText(modNum.getText());
+		viewRoom.setText(modRoom.getText());
+		viewPrice.setText(modPrice.getText());
+		viewISBN.setText(modISBN.getText());
+
 	}
 	//Action listeners for the search bar
 	public void changedUpdate(DocumentEvent event) {
