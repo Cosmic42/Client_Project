@@ -238,7 +238,8 @@ public class GUI extends JFrame {
         modRoom.addActionListener(handler);
         modPrice.addActionListener(handler);
         modISBN.addActionListener(handler);
-
+        deleteBook.addActionListener(handler);
+        
 		//GroupLayout to set the information
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
@@ -344,6 +345,7 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 	 */
 	
 	public void actionPerformed(ActionEvent event) {
+		int choice = 0;
 		if(event.getSource() == modNum)
 			database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
 		if(event.getSource() == modRoom)
@@ -353,10 +355,20 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 		if(event.getSource() == modISBN)
 			database.get(scrollList.getSelectedIndex()).setNum(modISBN.getText());
 		
+		if(event.getSource() == deleteBook){
+			if(!scrollList.isSelectionEmpty()){
+				choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
+						, "Confirm", JOptionPane.YES_NO_OPTION);
+				if(choice == 0){
+					database.remove(scrollList.getSelectedIndex());
+					searchJList();
+				}
+			}
+		}
+		
 		if(event.getSource() == checkOutButton){
-			JOptionPane confirm = new JOptionPane();
 			if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !scrollList.isSelectionEmpty()){
-				int choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\nIs this correct?"
+				choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\nIs this correct?"
 						, "Confirm", JOptionPane.YES_NO_OPTION);
 				if(choice == 0)
 					System.out.println("K");
