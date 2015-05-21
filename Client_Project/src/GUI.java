@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class GUI extends JFrame {
 	
-	///Fields, so that GUI Components can be used throughout the class
+
 	private JList scrollList;
 	private ArrayList<InventoryObject> database;
 	private JTabbedPane tabs;
@@ -19,17 +19,20 @@ public class GUI extends JFrame {
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName; 
 	private JTextField modNum, modPrice, modISBN, modRoom;
 	private JTextField checkOut;
-	private JButton checkOutButton, requestOk, changeOk;
+	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook;
 	
 	private GUIHandler handler;
 
-//----------------------------------------------------Constructor for GUI-----------------------------------------------------\\
+	/**
+	 * The constructor for the GUI that initializes all fields.
+	 * Also calls the methods to format each JPanel in the GUI
+	 * @throws IOException
+	 */
 	public GUI() throws IOException{
 		super("Book Inventory");
 		
 		handler = new GUIHandler();
 		
-		//Read the database
 		FileReader fileReader = new FileReader("Database/database.txt");
 		BufferedReader bufferReader = new BufferedReader(fileReader);
 		database = new ArrayList<InventoryObject>();
@@ -39,7 +42,6 @@ public class GUI extends JFrame {
       
         bufferReader.close();
 
-        //Initialize all the fields
         this.setLayout(new GridLayout(1, 2));
         filter = new DefaultListModel();
       
@@ -54,10 +56,10 @@ public class GUI extends JFrame {
 		modInventoryTab = new JPanel();
 		search = new JTextField(); viewNum = new JTextField(4); viewPrice = new JTextField(4); 
 		viewISBN = new JTextField(10); viewRoom = new JTextField(4); viewName = new JTextField();
-		modNum = new JTextField(4); modPrice = new JTextField(4); 
+		modNum = new JTextField(4); modPrice = new JTextField(4); checkOut = new JTextField(4);
 		modISBN = new JTextField(10); modRoom = new JTextField(4);
-		checkOutButton = new JButton("Request");
-		checkOut = new JTextField(4);
+		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
+		addBook = new JButton("Add Book"); plusBook = new JButton("+"); minusBook = new JButton("-");
 		
 		setInventoryTab();
 		setCheckOutTab();
@@ -68,6 +70,11 @@ public class GUI extends JFrame {
 	}
 
 //----------------------------------------------------Panel Setup-----------------------------------------------------\\
+	/**
+	 * Sets up the tab for the Inventory viewing panel
+	 * Utilizes both GridBagLayout and GroupLayout for formatting
+	 * the GUI
+	 */
 	public void setInventoryTab() {		
 		JPanel viewData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
@@ -75,7 +82,6 @@ public class GUI extends JFrame {
 		JLabel label3 = new JLabel("Price: ");
 		JLabel label4 = new JLabel("ISBN: ");
 
-		//Adding selectionlisteners
 		scrollList.addListSelectionListener(handler);
 		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
@@ -91,7 +97,6 @@ public class GUI extends JFrame {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		setGrid(c, 0, 1, 0, .01);
 		
-		//Adding Labels for search and JList
 		search.getDocument().addDocumentListener(handler);
 		viewBooks.add(search,c);
 		setGrid(c, 0, 0, 0, 0);
@@ -101,7 +106,6 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 2, 1, 1);
 		viewBooks.add(list, c);
 
-		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Uses GridBagLayout and GroupLayout		
 		viewData.setLayout(new GridBagLayout());
 		JLabel panelTitle = new JLabel(" Book Information");
 		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
@@ -113,7 +117,6 @@ public class GUI extends JFrame {
 		viewPrice.setEditable(false);
 		viewISBN.setEditable(false);
 
-		//GroupLayout to set the information
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
 		information.setLayout(layout);
@@ -147,7 +150,6 @@ public class GUI extends JFrame {
                     .addComponent(label4)
                     .addComponent(viewISBN)));
 
-        //Add information to GUI and pad
 		setGrid(c, 0, 1, 1, 0);
         viewData.add(information, c);
 		setGrid(c, 0, 2, 0, 1);
@@ -155,11 +157,13 @@ public class GUI extends JFrame {
 		inventoryTab.setLayout(new GridLayout(1, 2));		
 		inventoryTab.add(viewData);
 		
-		//Layouts for the other tabs WIP		
 		tabs.addTab("Inventory", inventoryTab);
 						
 	}
-
+	/**
+	 * Sets up the Check-out tab in the GUI
+	 * Uses GridBagLayout and GroupLayout
+	 */
 	public void setCheckOutTab(){
 		JPanel modData = new JPanel();
 		JLabel label1 = new JLabel("# of Book: ");
@@ -170,7 +174,6 @@ public class GUI extends JFrame {
 
 		viewName.setEditable(false);
 		
-		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Uses GridBagLayout and GroupLayout		
 		modData.setLayout(new GridBagLayout());
 		JLabel panelTitle = new JLabel(" Check out Books");
 		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
@@ -179,7 +182,6 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 1, 0, 0);
 		modData.add(viewName, c);
 		
-		//GroupLayout to set the information
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
 		information.setLayout(layout);
@@ -198,7 +200,6 @@ public class GUI extends JFrame {
                 .addComponent(checkOut)
                 .addComponent(checkOutButton)));
                 
-        //Add information to GUI and pad
 		setGrid(c, 0, 2, 1, 0);
         modData.add(information, c);
 		setGrid(c, 0, 3, 0, 1);
@@ -209,7 +210,12 @@ public class GUI extends JFrame {
 		tabs.addTab("Check-Out", checkOutTab);
 				
 	}
-	
+	/**
+	 * Sets up the Modifying inventory tab
+	 * Utilizes GridBagLayout and GroupLayout
+	 * Essentially a clone of setInventoryTab,
+	 * however it uses different fields
+	 */
 	public void setModifyTab(){
 		JPanel modData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
@@ -251,12 +257,18 @@ public class GUI extends JFrame {
                 .addComponent(modNum)
                 .addComponent(modRoom)
                 .addComponent(modPrice)
-                .addComponent(modISBN)));
+                .addComponent(modISBN))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(plusBook))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(minusBook)));
         
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
-                .addComponent(modNum))
+                .addComponent(modNum)
+                .addComponent(plusBook)
+                .addComponent(minusBook))
             .addGroup(layout.createParallelGroup()
                 .addComponent(label2)
                 .addComponent(modRoom))
@@ -264,13 +276,16 @@ public class GUI extends JFrame {
                 .addComponent(label3)
                 .addComponent(modPrice))
             .addGroup(layout.createParallelGroup()
-                    .addComponent(label4)
-                    .addComponent(modISBN)));
+                 .addComponent(label4)
+                 .addComponent(modISBN)));
 
-        //Add information to GUI and pad
 		setGrid(c, 0, 1, 1, 0);
         modData.add(information, c);
-		setGrid(c, 0, 2, 0, 1);
+		setGrid(c, 0, 2, 1, 0);
+		modData.add(addBook, c);
+		setGrid(c, 0, 3, 1, 0);
+		modData.add(deleteBook, c);
+		setGrid(c, 0, 4, 1, 1);
 		modData.add(new JLabel(""), c);
 		modInventoryTab.setLayout(new GridLayout(1, 2));		
 		modInventoryTab.add(modData);
@@ -279,13 +294,23 @@ public class GUI extends JFrame {
 				
 	}
 
-//----------------------------------------------GUI Relevant Functions-----------------------------------------------------\\
-
+	/**
+	 * Sets out the constraints for the GridBagLayout
+	 * with the given parameters
+	 * @param c
+	 * @param gridx
+	 * @param gridy
+	 * @param weightx
+	 * @param weighty
+	 */
 	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
 		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
 	}
 		
-	//Function searches through the database and adds them to the list model
+	/**
+	 * Searches through the JList to find matches
+	 * Updates the list on the GUI
+	 */
 	public void searchJList(){
         filter.clear();
 		scrollList.removeListSelectionListener(handler);
@@ -298,6 +323,9 @@ public class GUI extends JFrame {
         
 	}
 	
+	/**
+	 * Clears all text fields
+	 */
 	public void refresh(){
 		viewNum.setText(""); modNum.setText("");
 		viewRoom.setText(""); modRoom.setText("");
@@ -306,10 +334,15 @@ public class GUI extends JFrame {
 
 	}
 	
-//-----------------------------------------Nested Class for Event Listeners-------------------------------------------\\
 
 public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
 
+	/**
+	 * Action Listeners for buttons and text fields.
+	 * Includes setting text, handling requests, and
+	 * updating database
+	 */
+	
 	public void actionPerformed(ActionEvent event) {
 		if(event.getSource() == modNum)
 			database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
@@ -323,7 +356,7 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 		if(event.getSource() == checkOutButton){
 			JOptionPane confirm = new JOptionPane();
 			if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !scrollList.isSelectionEmpty()){
-				int choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\nIs the this correct?"
+				int choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\nIs this correct?"
 						, "Confirm", JOptionPane.YES_NO_OPTION);
 				if(choice == 0)
 					System.out.println("K");
@@ -355,7 +388,10 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 		searchJList();
 	}
 
-	//Update the information panel on the right 
+	/**
+	 * On select of the JList, set the
+	 * database to the selected element
+	 */
 	public void valueChanged(ListSelectionEvent event) {
 		if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
 			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());

@@ -7,7 +7,7 @@ public class BooksOut {
 	
 	public BooksOut(String t, int n){
 		teacher=t;
-		numout=n;		
+		numout=n;
 	}
 	
 	public ArrayList getBooksOut(){

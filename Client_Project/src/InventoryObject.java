@@ -1,11 +1,6 @@
 
 public class InventoryObject {
-	private String name;
-	private String grade;
-	private String room;
-	private String num;
-	private String price;
-	private String ISBN;
+	private String name, grade, room, num, price, ISBN;
 	
 	public InventoryObject(String line){
 		String[] data = line.split("\t");
