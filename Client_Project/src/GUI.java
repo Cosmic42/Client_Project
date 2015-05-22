@@ -17,8 +17,8 @@ public class GUI extends JFrame {
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks;
 	private DefaultListModel filter;
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName; 
-	private JTextField modNum, modPrice, modISBN, modRoom, modName;
-	private JTextField addNum, addPrice, addISBN, addRoom, addName;
+	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
+	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
 	private JTextField checkOut;
 	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook;
 	
@@ -59,8 +59,9 @@ public class GUI extends JFrame {
 		viewISBN = new JTextField(); viewRoom = new JTextField(); viewName = new JTextField();
 		modNum = new JTextField(); modPrice = new JTextField(); checkOut = new JTextField();
 		modISBN = new JTextField(); modRoom = new JTextField(); modName = new JTextField();
+		modGrade = new JTextField();
 		addNum = new JTextField(); addPrice = new JTextField(); addName = new JTextField();
-		addISBN = new JTextField(); addRoom = new JTextField();
+		addISBN = new JTextField(); addRoom = new JTextField(); addGrade = new JTextField();
 		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
 		addBook = new JButton("Add Book"); plusBook = new JButton("+"); minusBook = new JButton("-");
 		
@@ -226,7 +227,8 @@ public class GUI extends JFrame {
 		JLabel label3 = new JLabel("Stored in Room: ");
 		JLabel label4 = new JLabel("Price: ");
 		JLabel label5 = new JLabel("ISBN: ");
-		
+		JLabel label6 = new JLabel("Grade: ");
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		setGrid(c, 0, 2, 1, 1);
@@ -244,6 +246,7 @@ public class GUI extends JFrame {
         modPrice.addActionListener(handler);
         modISBN.addActionListener(handler);
         deleteBook.addActionListener(handler);
+        addBook.addActionListener(handler);
         plusBook.addActionListener(handler);
         minusBook.addActionListener(handler);
         
@@ -258,12 +261,14 @@ public class GUI extends JFrame {
         layout.setHorizontalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
             	.addComponent(label1)
+            	.addComponent(label6)
             	.addComponent(label2)
                 .addComponent(label3)
                 .addComponent(label4)
                 .addComponent(label5))
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addComponent(modName)
+                .addComponent(modGrade)
             	.addComponent(modNum)
                 .addComponent(modRoom)
                 .addComponent(modPrice)
@@ -277,6 +282,9 @@ public class GUI extends JFrame {
             .addGroup(layout.createParallelGroup()
             	.addComponent(label1)
             	.addComponent(modName))
+            .addGroup(layout.createParallelGroup()
+            	.addComponent(label6)
+            	.addComponent(modGrade))
             .addGroup(layout.createParallelGroup()
                 .addComponent(label2)
                 .addComponent(modNum)
@@ -307,34 +315,26 @@ public class GUI extends JFrame {
 				
 	}
 
-	public void addBookForm(){
-		JFrame form = new JFrame();
-		JPanel modData = new JPanel();
+	
+	public JPanel addBookForm(){
+		JPanel addData = new JPanel();
 		JLabel label1 = new JLabel("Title: ");
-		JLabel label2 = new JLabel("# of Books: ");
-		JLabel label3 = new JLabel("Stored in Room: ");
-		JLabel label4 = new JLabel("Price: ");
-		JLabel label5 = new JLabel("ISBN: ");
-		
+		JLabel label2 = new JLabel("Grade: ");
+		JLabel label3 = new JLabel("# of Books: ");
+		JLabel label4 = new JLabel("Stored in Room: ");
+		JLabel label5 = new JLabel("Price: ");
+		JLabel label6 = new JLabel("ISBN: ");
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		setGrid(c, 0, 2, 1, 1);
 
 		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Uses GridBagLayout and GroupLayout		
-		modData.setLayout(new GridBagLayout());
-		JLabel panelTitle = new JLabel(" Modify Book Information");
+		addData.setLayout(new GridBagLayout());
+		JLabel panelTitle = new JLabel(" Add Book Information                                    ");
 		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
 		setGrid(c, 0, 0, 0, 0);
-		modData.add(panelTitle, c);
-		
-        modNum.addActionListener(handler);
-        modRoom.addActionListener(handler);
-        modPrice.addActionListener(handler);
-        modISBN.addActionListener(handler);
-        deleteBook.addActionListener(handler);
-        plusBook.addActionListener(handler);
-        minusBook.addActionListener(handler);
-        
+		addData.add(panelTitle, c);
+		        
 		//GroupLayout to set the information
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
@@ -342,52 +342,49 @@ public class GUI extends JFrame {
 
 		layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
-
-        layout.setHorizontalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addComponent(label1)
-                .addComponent(label2)
-                .addComponent(label3)
-                .addComponent(label4))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(modNum)
-                .addComponent(modRoom)
-                .addComponent(modPrice)
-                .addComponent(modISBN))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(plusBook))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(minusBook)));
+//        formLayout(layout, label1, label2, label3, label4, label5, label6,
+//				 addName, addGrade, addNum, addRoom, addPrice, addISBN);
         
-        layout.setVerticalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup()
-                .addComponent(label1)
-                .addComponent(modNum)
-                .addComponent(plusBook)
-                .addComponent(minusBook))
-            .addGroup(layout.createParallelGroup()
-                .addComponent(label2)
-                .addComponent(modRoom))
-            .addGroup(layout.createParallelGroup()
-                .addComponent(label3)
-                .addComponent(modPrice))
-            .addGroup(layout.createParallelGroup()
-                 .addComponent(label4)
-                 .addComponent(modISBN)));
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                	.addComponent(label1)
+                	.addComponent(label6)
+                	.addComponent(label2)
+                    .addComponent(label3)
+                    .addComponent(label4)
+                    .addComponent(label5))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(addName)
+                    .addComponent(addGrade)
+                	.addComponent(addNum)
+                    .addComponent(addRoom)
+                    .addComponent(addPrice)
+                    .addComponent(addISBN)));
+            
+            layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup()
+                	.addComponent(label1)
+                	.addComponent(addName))
+                .addGroup(layout.createParallelGroup()
+                	.addComponent(label6)
+                	.addComponent(addGrade))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(label2)
+                    .addComponent(addNum))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(label3)
+                    .addComponent(addRoom))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(label4)
+                    .addComponent(addPrice))
+                .addGroup(layout.createParallelGroup()
+                     .addComponent(label5)
+                     .addComponent(addISBN)));
 
 		setGrid(c, 0, 1, 1, 0);
-        modData.add(information, c);
+		addData.add(information, c);
 		setGrid(c, 0, 2, 1, 0);
-		modData.add(addBook, c);
-		setGrid(c, 0, 3, 1, 0);
-		modData.add(deleteBook, c);
-		setGrid(c, 0, 4, 1, 1);
-		modData.add(new JLabel(""), c);
-		modInventoryTab.setLayout(new GridLayout(1, 2));		
-		modInventoryTab.add(modData);
-		
-		tabs.addTab("Modify Inventory", modInventoryTab);
-
+		return addData;
 	}
 		
 	
@@ -435,11 +432,12 @@ public class GUI extends JFrame {
 	 * Clears all text fields
 	 */
 	public void refresh(){
-		viewNum.setText(""); modNum.setText("");
-		viewRoom.setText(""); modRoom.setText("");
-		viewPrice.setText(""); modPrice.setText("");
-		viewISBN.setText(""); modISBN.setText("");
-		viewName.setText(""); modName.setText("");
+		viewNum.setText(""); modNum.setText(""); addNum.setText("");
+		viewRoom.setText(""); modRoom.setText(""); addRoom.setText("");
+		viewPrice.setText(""); modPrice.setText(""); addPrice.setText("");
+		viewISBN.setText(""); modISBN.setText(""); addISBN.setText("");
+		viewName.setText(""); modName.setText(""); addName.setText("");
+		modGrade.setText(""); addGrade.setText("");
 	}
 	public void update(){
 		if(!scrollList.isSelectionEmpty()){
@@ -454,7 +452,8 @@ public class GUI extends JFrame {
 			modRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
 			modPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
 			modISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
-			
+			modGrade.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getGrade());
+
 		}
 	}
 	
@@ -476,12 +475,14 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 		if(event.getSource() == modNum)
 			database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
 		if(event.getSource() == modRoom)
-			database.get(scrollList.getSelectedIndex()).setNum(modRoom.getText());
+			database.get(scrollList.getSelectedIndex()).setRoom(modRoom.getText());
 		if(event.getSource() == modPrice)
-			database.get(scrollList.getSelectedIndex()).setNum(modPrice.getText());
+			database.get(scrollList.getSelectedIndex()).setPrice(modPrice.getText());
 		if(event.getSource() == modISBN)
-			database.get(scrollList.getSelectedIndex()).setNum(modISBN.getText());
-		
+			database.get(scrollList.getSelectedIndex()).setISBN(modISBN.getText());
+		if(event.getSource() == modGrade)
+			database.get(scrollList.getSelectedIndex()).setGrade(modGrade.getText());
+
 		if(event.getSource() == plusBook && !scrollList.isSelectionEmpty())
 			database.get(scrollList.getSelectedIndex()).setNum((Integer.parseInt(modNum.getText())+1 + ""));
 		
@@ -494,12 +495,32 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 			if(choice == 0){
 				database.remove(scrollList.getSelectedIndex());
 				updateJList();
-			
+				refresh();
 			}
 		}
-		
+		if(event.getSource() == addBook){
+			choice = JOptionPane.showConfirmDialog(null, addBookForm(), "Enter Book Information:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+			if(choice == 0 && !addNum.getText().equals("") && !addPrice.getText().equals("") &&
+					!addGrade.getText().equals("") && !addName.getText().equals("") && 
+					!addISBN.getText().equals("") && !addRoom.getText().equals("")){
+				database.add(new InventoryObject(addName.getText() + "\t" +
+												 addGrade.getText() + "\t" +
+												 addRoom.getText() + "\t" +
+												 addNum.getText() + "\t" +
+												 addPrice.getText() + "\t" + 
+												 addISBN.getText() + "\t"));
+			}else if(!(choice == JOptionPane.CANCEL_OPTION)){
+				JOptionPane.showMessageDialog(null, "Error: At least on field not\nfilled", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			updateJList();
+			
+			refresh();
+		}
+
 		if(event.getSource() == checkOutButton){
-			if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !scrollList.isSelectionEmpty()){
+			if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) != 0 
+					&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(scrollList.getSelectedIndex()).getNum())
+					&& !scrollList.isSelectionEmpty()){
 				choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
 						"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
 				if(choice == 0)
