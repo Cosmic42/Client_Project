@@ -6,17 +6,19 @@ public class Main {
 
 	public static void main(String[] args) throws IOException{
 		
-		GUI window = new GUI();
+		LoginGUI window = new LoginGUI();
 		
 		ImageIcon logo = new ImageIcon("src/NS_Icon.png");
 		
 		//GUI setup
 		window.setIconImage(logo.getImage());
-		window.setSize(800, 500);
+		window.setSize(300, 130);
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
 		window.setLocationRelativeTo(null);
-		        
+		
+		
+		
 	}
 }

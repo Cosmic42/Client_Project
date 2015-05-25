@@ -29,7 +29,7 @@ public class GUI extends JFrame {
 	 * Also calls the methods to format each JPanel in the GUI
 	 * @throws IOException
 	 */
-	public GUI() throws IOException{
+	public GUI(Teacher user) throws IOException{
 		super("Book Inventory");
 		
 		handler = new GUIHandler();
@@ -472,11 +472,13 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 			database.get(scrollList.getSelectedIndex()).setName(modName.getText());
 			updateJList();
 		}
-		if(event.getSource() == modNum && modNum.getText().matches("[-+]?\\d*\\.?\\d+") 
-				&& !modNum.getText().contains("."))
-			database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
-		else
-			JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
+		if(event.getSource() == modNum)
+			if(modNum.getText().matches("[-+]?\\d*\\.?\\d+") 
+					&& !modNum.getText().contains("."))
+				database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
+			else
+				JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
+		
 		if(event.getSource() == modRoom)
 			database.get(scrollList.getSelectedIndex()).setRoom(modRoom.getText());
 		if(event.getSource() == modPrice)
