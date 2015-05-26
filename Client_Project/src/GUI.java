@@ -29,7 +29,7 @@ public class GUI extends JFrame {
 	 * Also calls the methods to format each JPanel in the GUI
 	 * @throws IOException
 	 */
-	public GUI() throws IOException{
+	public GUI(Teacher user) throws IOException{
 		super("Book Inventory");
 		
 		handler = new GUIHandler();
