@@ -29,7 +29,7 @@ public class GUI extends JFrame {
 	 * Also calls the methods to format each JPanel in the GUI
 	 * @throws IOException
 	 */
-	public GUI(Teacher user) throws IOException{
+	public GUI() throws IOException{
 		super("Book Inventory");
 		
 		handler = new GUIHandler();
@@ -478,41 +478,62 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 	
 	public void actionPerformed(ActionEvent event) {
 		int choice = 0;
-		if(event.getSource() == modName){
-			database.get(scrollList.getSelectedIndex()).setName(modName.getText());
-			updateJList();
-		}
-		if(event.getSource() == modNum)
-			if(modNum.getText().matches("[-+]?\\d*\\.?\\d+") 
-					&& !modNum.getText().contains("."))
-				database.get(scrollList.getSelectedIndex()).setNum(modNum.getText());
-			else
-				JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
-		
-		if(event.getSource() == modRoom)
-			database.get(scrollList.getSelectedIndex()).setRoom(modRoom.getText());
-		if(event.getSource() == modPrice)
-			database.get(scrollList.getSelectedIndex()).setPrice(modPrice.getText());
-		if(event.getSource() == modISBN)
-			database.get(scrollList.getSelectedIndex()).setISBN(modISBN.getText());
-		if(event.getSource() == modGrade)
-			database.get(scrollList.getSelectedIndex()).setGrade(modGrade.getText());
-
-		if(event.getSource() == plusBook && !scrollList.isSelectionEmpty())
-			database.get(scrollList.getSelectedIndex()).setNum((Integer.parseInt(modNum.getText())+1 + ""));
-		
-		if(event.getSource() == minusBook && !scrollList.isSelectionEmpty())
-			database.get(scrollList.getSelectedIndex()).setNum((Integer.parseInt(modNum.getText())-1 + ""));
-
-		if(event.getSource() == deleteBook && !scrollList.isSelectionEmpty()){
-			choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
-					, "Confirm", JOptionPane.YES_NO_OPTION);
-			if(choice == 0){
-				database.remove(scrollList.getSelectedIndex());
+		if(!scrollList.isSelectionEmpty()){
+			if(event.getSource() == modName){
+				database.get(scrollList.getSelectedIndex()).setName(modName.getText());
 				updateJList();
-				refresh();
+			}
+			if(event.getSource() == modNum)
+				System.out.println("Running");
+				if(modNum.getText().matches("[-+]?\\d*\\.?\\d+")
+						&& !modNum.getText().contains(".") 
+						&& Integer.parseInt(modNum.getText()) >=0)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modNum.getText());
+				else
+					JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
+			
+			if(event.getSource() == modRoom)
+				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setRoom(modRoom.getText());
+			if(event.getSource() == modPrice)
+				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setPrice(modPrice.getText());
+			if(event.getSource() == modISBN)
+				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setISBN(modISBN.getText());
+			if(event.getSource() == modGrade)
+				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setGrade(modGrade.getText());
+	
+			if(event.getSource() == plusBook)
+				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())+1 + ""));
+			
+			if(event.getSource() == minusBook && Integer.parseInt(modNum.getText())-1 >= 0)
+				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())-1 + ""));
+	
+			if(event.getSource() == deleteBook){
+				choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
+						, "Confirm", JOptionPane.YES_NO_OPTION);
+				if(choice == 0){
+					database.remove(scrollList.getSelectedIndex());
+					updateJList();
+					refresh();
+				}
+			}
+		
+			if(event.getSource() == checkOutButton){
+				if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) != 0 
+						&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())){
+					choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
+							"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
+					if(choice == 0)
+						System.out.println("K");
+					else
+						System.out.println("get out then");
+				}else{
+					JOptionPane.showMessageDialog(null, "Error: No books selected \n" +
+							"or no valid number entered", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
 		}
+		
 		if(event.getSource() == addBook){
 			choice = JOptionPane.showConfirmDialog(null, addBookForm(), "Enter Book Information:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if(choice == 0 && !addNum.getText().equals("") && !addPrice.getText().equals("") &&
@@ -532,22 +553,6 @@ public class GUIHandler implements ActionListener, DocumentListener, ListSelecti
 			refresh();
 		}
 
-		if(event.getSource() == checkOutButton){
-			if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) != 0 
-					&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(scrollList.getSelectedIndex()).getNum())
-					&& !scrollList.isSelectionEmpty()){
-				choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
-						"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
-				if(choice == 0)
-					System.out.println("K");
-				else
-					System.out.println("get out then");
-			}else{
-				JOptionPane.showMessageDialog(null, "Error: No books selected \n" +
-						"or no valid number entered", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-			
-		}
 			
 		update();
 	}
