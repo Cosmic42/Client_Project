@@ -16,7 +16,7 @@ public class GUI extends JFrame {
 	private JTabbedPane tabs;
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks;
 	private DefaultListModel filter;
-	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName; 
+	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName, viewGrade; 
 	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
 	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
 	private JTextField checkOut;
@@ -57,6 +57,7 @@ public class GUI extends JFrame {
 		modInventoryTab = new JPanel();
 		search = new JTextField(); viewNum = new JTextField(); viewPrice = new JTextField(); 
 		viewISBN = new JTextField(); viewRoom = new JTextField(); viewName = new JTextField();
+		viewGrade = new JTextField();
 		modNum = new JTextField(); modPrice = new JTextField(); checkOut = new JTextField();
 		modISBN = new JTextField(); modRoom = new JTextField(); modName = new JTextField();
 		modGrade = new JTextField();
@@ -85,6 +86,7 @@ public class GUI extends JFrame {
 		JLabel label2 = new JLabel("Stored in Room: ");
 		JLabel label3 = new JLabel("Price: ");
 		JLabel label4 = new JLabel("ISBN: ");
+		JLabel label5 = new JLabel("Grade: ");
 
 		scrollList.addListSelectionListener(handler);
 		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -117,6 +119,7 @@ public class GUI extends JFrame {
 		viewData.add(panelTitle, c);
 		
 		viewNum.setEditable(false);
+		viewGrade.setEditable(false);
 		viewRoom.setEditable(false);
 		viewPrice.setEditable(false);
 		viewISBN.setEditable(false);
@@ -131,11 +134,13 @@ public class GUI extends JFrame {
         layout.setHorizontalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                 .addComponent(label1)
+                .addComponent(label5)
                 .addComponent(label2)
                 .addComponent(label3)
                 .addComponent(label4))
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addComponent(viewNum)
+                .addComponent(viewGrade)
                 .addComponent(viewRoom)
                 .addComponent(viewPrice)
                 .addComponent(viewISBN)));
@@ -145,14 +150,17 @@ public class GUI extends JFrame {
                 .addComponent(label1)
                 .addComponent(viewNum))
             .addGroup(layout.createParallelGroup()
+                .addComponent(label5)
+                .addComponent(viewGrade))
+            .addGroup(layout.createParallelGroup()
                 .addComponent(label2)
                 .addComponent(viewRoom))
             .addGroup(layout.createParallelGroup()
                 .addComponent(label3)
                 .addComponent(viewPrice))
             .addGroup(layout.createParallelGroup()
-                    .addComponent(label4)
-                    .addComponent(viewISBN)));
+                .addComponent(label4)
+                .addComponent(viewISBN)));
 
 		setGrid(c, 0, 1, 1, 0);
         viewData.add(information, c);
@@ -170,7 +178,7 @@ public class GUI extends JFrame {
 	 */
 	public void setCheckOutTab(){
 		JPanel modData = new JPanel();
-		JLabel label1 = new JLabel("# of Book: ");
+		JLabel label1 = new JLabel("# of Books: ");
 		checkOutButton.addActionListener(handler);
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -242,6 +250,7 @@ public class GUI extends JFrame {
 		
 		modName.addActionListener(handler);
         modNum.addActionListener(handler);
+        modGrade.addActionListener(handler);
         modRoom.addActionListener(handler);
         modPrice.addActionListener(handler);
         modISBN.addActionListener(handler);
@@ -437,7 +446,7 @@ public class GUI extends JFrame {
 		viewPrice.setText(""); modPrice.setText(""); addPrice.setText("");
 		viewISBN.setText(""); modISBN.setText(""); addISBN.setText("");
 		viewName.setText(""); modName.setText(""); addName.setText("");
-		modGrade.setText(""); addGrade.setText("");
+		viewGrade.setText(""); modGrade.setText(""); addGrade.setText("");
 	}
 	public void update(){
 		if(!scrollList.isSelectionEmpty()){
@@ -446,6 +455,7 @@ public class GUI extends JFrame {
 			viewPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
 			viewISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
 			viewName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
+			viewGrade.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getGrade());
 
 			modName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
 			modNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
