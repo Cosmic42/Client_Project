@@ -19,7 +19,7 @@ public class GUI extends JFrame {
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName, viewGrade; 
 	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
 	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
-	private JTextField checkOut, viewRequestNum, viewRequestTitle;
+	private JTextField checkOut, requestRoom, viewRequestNum, viewRequestTitle;
 	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook, viewRequests, accept, decline;
 	private Teacher user;
 	private GUIHandler handler;
@@ -62,7 +62,7 @@ public class GUI extends JFrame {
 		viewGrade = new JTextField();
 		modNum = new JTextField(); modPrice = new JTextField(); checkOut = new JTextField();
 		modISBN = new JTextField(); modRoom = new JTextField(); modName = new JTextField();
-		modGrade = new JTextField();
+		modGrade = new JTextField(); requestRoom = new JTextField();
 		addNum = new JTextField(); addPrice = new JTextField(); addName = new JTextField();
 		addISBN = new JTextField(); addRoom = new JTextField(); addGrade = new JTextField();
 		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
@@ -74,7 +74,8 @@ public class GUI extends JFrame {
 		
 		setInventoryTab();
 		setCheckOutTab();
-		setModifyTab();
+		if(user.isAdmin())
+			setModifyTab();
 		add(viewBooks);
 		add(tabs);
 
@@ -185,6 +186,7 @@ public class GUI extends JFrame {
 	public void setCheckOutTab(){
 		JPanel modData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
+		JLabel label2 = new JLabel("To Room: ");
 		checkOutButton.addActionListener(handler);
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -208,10 +210,10 @@ public class GUI extends JFrame {
         layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
-                .addComponent(label1)
+        		.addComponent(label1)
                 .addComponent(checkOut)
                 .addComponent(checkOutButton));
-        	
+        
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
@@ -543,7 +545,7 @@ public class GUI extends JFrame {
 			int choice = 0;
 			if(!scrollList.isSelectionEmpty()){
 				if(event.getSource() == modName){
-					database.get(scrollList.getSelectedIndex()).setName(modName.getText());
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modName.getText());
 					updateJList();
 				}
 				if(event.getSource() == modNum)
@@ -580,7 +582,7 @@ public class GUI extends JFrame {
 				}
 			
 				if(event.getSource() == checkOutButton){
-					if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) != 0 
+					if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) > 0 
 							&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())){
 						choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
 								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
@@ -589,8 +591,7 @@ public class GUI extends JFrame {
 						else
 							System.out.println("get out then");
 					}else{
-						JOptionPane.showMessageDialog(null, "Error: No books selected \n" +
-								"or no valid number entered", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					
 				}
@@ -598,7 +599,7 @@ public class GUI extends JFrame {
 			
 			if(event.getSource() == addBook){
 				choice = JOptionPane.showConfirmDialog(null, addBookForm(), "Enter Book Information:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-				if(choice == 0 && !addNum.getText().equals("") && !addPrice.getText().equals("") &&
+				if(choice == 0 && !addNum.getText().equals("") && addNum.getText().matches("[-+]?\\d*\\.?\\d+") && !addPrice.getText().equals("") &&
 						!addGrade.getText().equals("") && !addName.getText().equals("") && 
 						!addISBN.getText().equals("") && !addRoom.getText().equals("")){
 					database.add(new InventoryObject(addName.getText() + "\t" +
@@ -608,7 +609,7 @@ public class GUI extends JFrame {
 													 addPrice.getText() + "\t" + 
 													 addISBN.getText() + "\t"));
 				}else if(!(choice == JOptionPane.CANCEL_OPTION)){
-					JOptionPane.showMessageDialog(null, "Error: At least on field not\nfilled", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error: At least on field not\nfilled or invalid", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				updateJList();
 				

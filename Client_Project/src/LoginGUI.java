@@ -28,7 +28,7 @@ public class LoginGUI extends JFrame {
 		users = new ArrayList<Teacher>();
         String line;
 		while((line = bufferReader.readLine()) != null)
-            users.add(new Teacher(line.split("\t")[0], line.split("\t")[1], line.split("\t")[2]));
+            users.add(new Teacher(line.split("\t")[0], line.split("\t")[1], line.split("\t")[2], Boolean.valueOf(line.split("\t")[3])));
       
         bufferReader.close();
         
