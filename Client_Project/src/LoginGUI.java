@@ -85,7 +85,7 @@ public class LoginGUI extends JFrame {
 	
 	public boolean checkUser(String username, String password){
 		for(Teacher teacher : users)
-			if(teacher.getUsername().equals(username) && teacher.getPassword().equals(password)){
+			if(teacher.getUsername().toLowerCase().equals(username.toLowerCase()) && teacher.getPassword().equals(password)){
 				user = teacher;
 				return true;
 			}

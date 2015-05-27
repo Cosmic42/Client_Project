@@ -19,9 +19,9 @@ public class GUI extends JFrame {
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName, viewGrade; 
 	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
 	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
-	private JTextField checkOut;
-	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook;
-	
+	private JTextField checkOut, viewRequestNum, viewRequestTitle;
+	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook, viewRequests, accept, decline;
+	private Teacher user;
 	private GUIHandler handler;
 
 	/**
@@ -32,6 +32,7 @@ public class GUI extends JFrame {
 	public GUI(Teacher user) throws IOException{
 		super("Book Inventory");
 		
+		this.user = user;
 		handler = new GUIHandler();
 		
 		FileReader fileReader = new FileReader("Database/database.txt");
@@ -44,6 +45,7 @@ public class GUI extends JFrame {
         bufferReader.close();
 
         this.setLayout(new GridLayout(1, 2));
+        
         filter = new DefaultListModel();
       
         for(InventoryObject i:database)
@@ -65,6 +67,10 @@ public class GUI extends JFrame {
 		addISBN = new JTextField(); addRoom = new JTextField(); addGrade = new JTextField();
 		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
 		addBook = new JButton("Add Book"); plusBook = new JButton("+"); minusBook = new JButton("-");
+		viewRequests = new JButton("View Requests"); accept = new JButton("Accept"); decline = new JButton("Decline");
+		
+		accept.addActionListener(handler);
+		decline.addActionListener(handler);
 		
 		setInventoryTab();
 		setCheckOutTab();
@@ -258,6 +264,7 @@ public class GUI extends JFrame {
         addBook.addActionListener(handler);
         plusBook.addActionListener(handler);
         minusBook.addActionListener(handler);
+        viewRequests.addActionListener(handler);
         
 		//GroupLayout to set the information
 		JPanel information = new JPanel();
@@ -315,7 +322,9 @@ public class GUI extends JFrame {
 		modData.add(addBook, c);
 		setGrid(c, 0, 3, 1, 0);
 		modData.add(deleteBook, c);
-		setGrid(c, 0, 4, 1, 1);
+		setGrid(c, 0, 4, 1, 0);
+		modData.add(viewRequests, c);
+		setGrid(c, 0, 5, 1, 1);
 		modData.add(new JLabel(""), c);
 		modInventoryTab.setLayout(new GridLayout(1, 2));		
 		modInventoryTab.add(modData);
@@ -337,22 +346,18 @@ public class GUI extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 
-		//Display Information. The next blocks of code is just adding JLabels and JTextFields. Uses GridBagLayout and GroupLayout		
 		addData.setLayout(new GridBagLayout());
 		JLabel panelTitle = new JLabel(" Add Book Information                                    ");
 		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
 		setGrid(c, 0, 0, 0, 0);
 		addData.add(panelTitle, c);
 		        
-		//GroupLayout to set the information
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
 		information.setLayout(layout);
 
 		layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
-//        formLayout(layout, label1, label2, label3, label4, label5, label6,
-//				 addName, addGrade, addNum, addRoom, addPrice, addISBN);
         
         layout.setHorizontalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
@@ -395,7 +400,7 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 2, 1, 0);
 		return addData;
 	}
-		
+
 	
 	/**
 	 * Sets out the constraints for the GridBagLayout
@@ -467,117 +472,183 @@ public class GUI extends JFrame {
 		}
 	}
 	
+	public JPanel setRequestGUI(){
+		JPanel requestPane = new JPanel();
+		JPanel informationPane = new JPanel();
 
-public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
+		DefaultListModel requests = new DefaultListModel();
+                
+		JList scrollRequest = new JList(requests);
+		
+		JScrollPane list = new JScrollPane(scrollRequest, 
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-	/**
-	 * Action Listeners for buttons and text fields.
-	 * Includes setting text, handling requests, and
-	 * updating database
-	 */
+		
+		JLabel label1 = new JLabel("Title: ");
+		JLabel label2 = new JLabel("# of Book: ");
+
+		viewRequestNum = new JTextField();
+		viewRequestTitle = new JTextField();
+		
+		viewRequestNum.setEditable(false); viewRequestTitle.setEditable(false);
+		        
+		GroupLayout layout = new GroupLayout(informationPane);
+		informationPane.setLayout(layout);
+
+		layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                	.addComponent(label1)
+                	.addComponent(label2)
+                	.addComponent(accept))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(viewRequestTitle)
+                    .addComponent(viewRequestNum)
+            		.addComponent(decline)));
+           
+        layout.setVerticalGroup(layout.createSequentialGroup()
+        		.addGroup(layout.createParallelGroup()
+                	.addComponent(label1)
+                	.addComponent(viewRequestTitle))
+                .addGroup(layout.createParallelGroup()
+                	.addComponent(label2)
+                	.addComponent(viewRequestNum))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(accept)
+                    .addComponent(decline)));
+
+		
+		requestPane.setLayout(new GridLayout(1,2));
+		requestPane.add(list);
+		requestPane.add(informationPane);
+		return requestPane;
+	}
+
 	
-	public void actionPerformed(ActionEvent event) {
-		int choice = 0;
-		if(!scrollList.isSelectionEmpty()){
-			if(event.getSource() == modName){
-				database.get(scrollList.getSelectedIndex()).setName(modName.getText());
-				updateJList();
-			}
-			if(event.getSource() == modNum)
-				System.out.println("Running");
-				if(modNum.getText().matches("[-+]?\\d*\\.?\\d+")
-						&& !modNum.getText().contains(".") 
-						&& Integer.parseInt(modNum.getText()) >=0)
-					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modNum.getText());
-				else
-					JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
-			
-			if(event.getSource() == modRoom)
-				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setRoom(modRoom.getText());
-			if(event.getSource() == modPrice)
-				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setPrice(modPrice.getText());
-			if(event.getSource() == modISBN)
-				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setISBN(modISBN.getText());
-			if(event.getSource() == modGrade)
-				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setGrade(modGrade.getText());
+//--------------------------------------------------------------------------------------------------------------------------\\	
 	
-			if(event.getSource() == plusBook)
-				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())+1 + ""));
-			
-			if(event.getSource() == minusBook && Integer.parseInt(modNum.getText())-1 >= 0)
-				database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())-1 + ""));
 	
-			if(event.getSource() == deleteBook){
-				choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
-						, "Confirm", JOptionPane.YES_NO_OPTION);
-				if(choice == 0){
-					database.remove(scrollList.getSelectedIndex());
+	public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
+	
+		/**
+		 * Action Listeners for buttons and text fields.
+		 * Includes setting text, handling requests, and
+		 * updating database
+		 */
+		
+		public void actionPerformed(ActionEvent event) {
+			int choice = 0;
+			if(!scrollList.isSelectionEmpty()){
+				if(event.getSource() == modName){
+					database.get(scrollList.getSelectedIndex()).setName(modName.getText());
 					updateJList();
-					refresh();
 				}
-			}
-		
-			if(event.getSource() == checkOutButton){
-				if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) != 0 
-						&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())){
-					choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
-							"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
-					if(choice == 0)
-						System.out.println("K");
+				if(event.getSource() == modNum)
+					if(modNum.getText().matches("[-+]?\\d*\\.?\\d+")
+							&& !modNum.getText().contains(".") 
+							&& Integer.parseInt(modNum.getText()) >=0)
+						database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modNum.getText());
 					else
-						System.out.println("get out then");
-				}else{
-					JOptionPane.showMessageDialog(null, "Error: No books selected \n" +
-							"or no valid number entered", "Error", JOptionPane.ERROR_MESSAGE);
-				}
+						JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
 				
-			}
-		}
+				if(event.getSource() == modRoom)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setRoom(modRoom.getText());
+				if(event.getSource() == modPrice)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setPrice(modPrice.getText());
+				if(event.getSource() == modISBN)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setISBN(modISBN.getText());
+				if(event.getSource() == modGrade)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setGrade(modGrade.getText());
 		
-		if(event.getSource() == addBook){
-			choice = JOptionPane.showConfirmDialog(null, addBookForm(), "Enter Book Information:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-			if(choice == 0 && !addNum.getText().equals("") && !addPrice.getText().equals("") &&
-					!addGrade.getText().equals("") && !addName.getText().equals("") && 
-					!addISBN.getText().equals("") && !addRoom.getText().equals("")){
-				database.add(new InventoryObject(addName.getText() + "\t" +
-												 addGrade.getText() + "\t" +
-												 addRoom.getText() + "\t" +
-												 addNum.getText() + "\t" +
-												 addPrice.getText() + "\t" + 
-												 addISBN.getText() + "\t"));
-			}else if(!(choice == JOptionPane.CANCEL_OPTION)){
-				JOptionPane.showMessageDialog(null, "Error: At least on field not\nfilled", "Error", JOptionPane.ERROR_MESSAGE);
+				if(event.getSource() == plusBook)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())+1 + ""));
+				
+				if(event.getSource() == minusBook && Integer.parseInt(modNum.getText())-1 >= 0)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())-1 + ""));
+		
+				if(event.getSource() == deleteBook){
+					choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
+							, "Confirm", JOptionPane.YES_NO_OPTION);
+					if(choice == 0){
+						database.remove(scrollList.getSelectedIndex());
+						updateJList();
+						refresh();
+					}
+				}
+			
+				if(event.getSource() == checkOutButton){
+					if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) != 0 
+							&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())){
+						choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
+								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
+						if(choice == 0)
+							System.out.println("K");
+						else
+							System.out.println("get out then");
+					}else{
+						JOptionPane.showMessageDialog(null, "Error: No books selected \n" +
+								"or no valid number entered", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
 			}
-			updateJList();
 			
-			refresh();
-		}
+			if(event.getSource() == addBook){
+				choice = JOptionPane.showConfirmDialog(null, addBookForm(), "Enter Book Information:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				if(choice == 0 && !addNum.getText().equals("") && !addPrice.getText().equals("") &&
+						!addGrade.getText().equals("") && !addName.getText().equals("") && 
+						!addISBN.getText().equals("") && !addRoom.getText().equals("")){
+					database.add(new InventoryObject(addName.getText() + "\t" +
+													 addGrade.getText() + "\t" +
+													 addRoom.getText() + "\t" +
+													 addNum.getText() + "\t" +
+													 addPrice.getText() + "\t" + 
+													 addISBN.getText() + "\t"));
+				}else if(!(choice == JOptionPane.CANCEL_OPTION)){
+					JOptionPane.showMessageDialog(null, "Error: At least on field not\nfilled", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				updateJList();
+				
+				refresh();
+			}
+	
+			if(event.getSource() == viewRequests){
+				JOptionPane.showConfirmDialog(null, setRequestGUI(), "Requests:", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE);
+			}
+			if(event.getSource() == accept)
+				JOptionPane.showMessageDialog(null, "Request Accepted", "Request", JOptionPane.INFORMATION_MESSAGE);
 
-			
-		update();
-	}
-	//Action listeners for the search bar
-	public void changedUpdate(DocumentEvent event) {
-		searchJList();
-	}
+			if(event.getSource() == decline)
+				JOptionPane.showMessageDialog(null, "Request Declined", "Request", JOptionPane.INFORMATION_MESSAGE);
 
-	public void insertUpdate(DocumentEvent event) {
-		searchJList();
-	}
-
-	public void removeUpdate(DocumentEvent event) {
-		searchJList();
-	}
-
-	/**
-	 * On select of the JList, set the
-	 * database to the selected element
-	 */
-	public void valueChanged(ListSelectionEvent event) {
-		if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
+				
 			update();
 		}
+	
+		public void changedUpdate(DocumentEvent event) {
+			searchJList();
+		}
+	
+		public void insertUpdate(DocumentEvent event) {
+			searchJList();
+		}
+	
+		public void removeUpdate(DocumentEvent event) {
+			searchJList();
+		}
+	
+		/**
+		 * On select of the JList, set the
+		 * database to the selected element
+		 */
+		public void valueChanged(ListSelectionEvent event) {
+			if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
+				update();
+			}
+		}
+	 
 	}
- 
-}
 }
