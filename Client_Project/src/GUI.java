@@ -20,7 +20,7 @@ public class GUI extends JFrame {
 	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
 	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
 	private JTextField checkOut, requestRoom, viewRequestNum, viewRequestTitle;
-	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook, viewRequests, accept, decline;
+	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook, viewRequests, accept, decline, returnRequest;
 	private Teacher user;
 	private GUIHandler handler;
 
@@ -68,7 +68,7 @@ public class GUI extends JFrame {
 		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
 		addBook = new JButton("Add Book"); plusBook = new JButton("+"); minusBook = new JButton("-");
 		viewRequests = new JButton("View Requests"); accept = new JButton("Accept"); decline = new JButton("Decline");
-		
+		returnRequest = new JButton("Return");
 		accept.addActionListener(handler);
 		decline.addActionListener(handler);
 		
@@ -210,15 +210,25 @@ public class GUI extends JFrame {
         layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
         		.addComponent(label1)
+        		.addComponent(label2))
+        	.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                 .addComponent(checkOut)
-                .addComponent(checkOutButton));
+                .addComponent(requestRoom))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+            	.addComponent(checkOutButton)
+            	.addComponent(returnRequest)));
         
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
                 .addComponent(checkOut)
-                .addComponent(checkOutButton)));
+                .addComponent(checkOutButton))
+            .addGroup(layout.createParallelGroup()
+                .addComponent(label2)
+                .addComponent(requestRoom)
+                .addComponent(returnRequest)));
                 
 		setGrid(c, 0, 2, 1, 0);
         modData.add(information, c);
@@ -227,7 +237,7 @@ public class GUI extends JFrame {
 		checkOutTab.setLayout(new GridLayout(1, 2));		
 		checkOutTab.add(modData);
 		
-		tabs.addTab("Check-Out", checkOutTab);
+		tabs.addTab("Check-Out/Returns", checkOutTab);
 				
 	}
 	/**
@@ -583,7 +593,8 @@ public class GUI extends JFrame {
 			
 				if(event.getSource() == checkOutButton){
 					if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) > 0 
-							&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())){
+							&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())
+							&& requestRoom.getText().matches("[-+]?\\d*\\.?\\d+") && !requestRoom.getText().contains(".")){
 						choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
 								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
 						if(choice == 0)
