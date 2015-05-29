@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.*;
@@ -10,17 +11,20 @@ import javax.swing.*;
 
 public class GUI extends JFrame {
 	
-
-	private JList scrollList;
+	private JList scrollList, scrollRequest, scrollReply;
 	private ArrayList<InventoryObject> database;
+	private ArrayList<Notification> requestList;
+	private ArrayList<Message> replyList;
 	private JTabbedPane tabs;
 	private JPanel inventoryTab, checkOutTab, modInventoryTab, viewBooks;
-	private DefaultListModel filter;
+	private DefaultListModel filter, requests, replies;
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName, viewGrade; 
 	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
 	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
-	private JTextField checkOut, requestRoom, viewRequestNum, viewRequestTitle;
+	private JTextField checkOut, requestRoom, viewRequestNum, viewRequestTitle, viewRequestRoom, viewIfBorrow;
+	private JTextField ifAccepted, replyCopies, replyTitle, replyIfBorrow;
 	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook, viewRequests, accept, decline, returnRequest;
+	private JButton viewMessages;
 	private Teacher user;
 	private GUIHandler handler;
 
@@ -34,6 +38,9 @@ public class GUI extends JFrame {
 		
 		this.user = user;
 		handler = new GUIHandler();
+		
+		
+		
 		
 		FileReader fileReader = new FileReader("Database/database.txt");
 		BufferedReader bufferReader = new BufferedReader(fileReader);
@@ -53,6 +60,55 @@ public class GUI extends JFrame {
         
 		scrollList = new JList(filter);
 		
+		
+		
+		
+		FileReader fileReaderRequest = new FileReader("Database/Notifications.txt");
+		BufferedReader bufferReaderRequest = new BufferedReader(fileReaderRequest);
+		requestList = new ArrayList<Notification>();
+		String lineR;
+		while((lineR = bufferReaderRequest.readLine()) != null)
+			requestList.add(new Notification(lineR));
+		
+		bufferReaderRequest.close();
+		
+		requests = new DefaultListModel();
+		
+		for(Notification i: requestList)
+			requests.addElement(i);
+                
+		scrollRequest = new JList(requests);
+		
+		scrollRequest.addListSelectionListener(handler);
+		scrollRequest.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		
+		
+		
+		FileReader fileReaderMessage = new FileReader("Database/ReturnMsg.txt");
+		BufferedReader bufferReaderMessage = new BufferedReader(fileReaderMessage);
+		replyList = new ArrayList<Message>();
+		String lineMessage;
+		while((lineMessage = bufferReaderMessage.readLine()) != null)
+			replyList.add(new Message(lineMessage));
+		
+		bufferReader.close();
+		
+		replies = new DefaultListModel();
+		
+		for(Message i: replyList){
+			if(i.getTeacher().equals(user.toString()))
+				replies.addElement(i);
+		}
+		
+		scrollReply = new JList(replies);
+		
+		scrollReply.addListSelectionListener(handler);
+		scrollReply.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		
+		
+		
 		tabs = new JTabbedPane();
 		inventoryTab = new JPanel(); viewBooks = new JPanel();
 		checkOutTab = new JPanel();
@@ -68,9 +124,11 @@ public class GUI extends JFrame {
 		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
 		addBook = new JButton("Add Book"); plusBook = new JButton("+"); minusBook = new JButton("-");
 		viewRequests = new JButton("View Requests"); accept = new JButton("Accept"); decline = new JButton("Decline");
-		returnRequest = new JButton("Return");
+		returnRequest = new JButton("Return"); 
+		viewMessages = new JButton("View Replies");
 		accept.addActionListener(handler);
 		decline.addActionListener(handler);
+		ifAccepted = new JTextField(); replyCopies = new JTextField(); replyTitle = new JTextField(); replyIfBorrow = new JTextField();
 		
 		setInventoryTab();
 		setCheckOutTab();
@@ -186,8 +244,10 @@ public class GUI extends JFrame {
 	public void setCheckOutTab(){
 		JPanel modData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
-		JLabel label2 = new JLabel("To Room: ");
+		JLabel label2 = new JLabel("To/From Room: ");
 		checkOutButton.addActionListener(handler);
+		viewMessages.addActionListener(handler);
+		
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
@@ -197,9 +257,9 @@ public class GUI extends JFrame {
 		modData.setLayout(new GridBagLayout());
 		JLabel panelTitle = new JLabel(" Check out Books");
 		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
-		setGrid(c, 0, 0, 0, 0);
+		setGrid(c, 0, 0, 1, 0);
 		modData.add(panelTitle, c);
-		setGrid(c, 0, 1, 0, 0);
+		setGrid(c, 0, 1, 1, 0);
 		modData.add(viewName, c);
 		
 		JPanel information = new JPanel();
@@ -220,6 +280,7 @@ public class GUI extends JFrame {
             	.addComponent(checkOutButton)
             	.addComponent(returnRequest)));
         
+
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(label1)
@@ -229,10 +290,13 @@ public class GUI extends JFrame {
                 .addComponent(label2)
                 .addComponent(requestRoom)
                 .addComponent(returnRequest)));
+ 
                 
 		setGrid(c, 0, 2, 1, 0);
         modData.add(information, c);
-		setGrid(c, 0, 3, 0, 1);
+        setGrid(c, 0, 3, 1, 0);
+		modData.add(viewMessages, c);
+        setGrid(c, 0, 4, 1, 0);
 		modData.add(new JLabel(""), c);
 		checkOutTab.setLayout(new GridLayout(1, 2));		
 		checkOutTab.add(modData);
@@ -343,8 +407,7 @@ public class GUI extends JFrame {
 		
 		tabs.addTab("Modify Inventory", modInventoryTab);
 				
-	}
-
+	}	
 	
 	public JPanel addBookForm(){
 		JPanel addData = new JPanel();
@@ -359,10 +422,10 @@ public class GUI extends JFrame {
 		c.fill = GridBagConstraints.BOTH;
 
 		addData.setLayout(new GridBagLayout());
-		JLabel panelTitle = new JLabel(" Add Book Information                                    ");
+		JLabel panelTitle = new JLabel(" Add Book Information");
 		panelTitle.setFont((new Font("", Font.PLAIN, 20)));
 		setGrid(c, 0, 0, 0, 0);
-		addData.add(panelTitle, c);
+		addData.add(panelTitle, c);	
 		        
 		JPanel information = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
@@ -441,6 +504,7 @@ public class GUI extends JFrame {
 		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		refresh();
 	}
+	
 	public void updateJList(){
         int index = scrollList.getSelectedIndex();
 		filter.clear();
@@ -454,6 +518,17 @@ public class GUI extends JFrame {
 		update();
 	}
 	
+	public void updateJListRequest(){
+		requests.clear();
+		scrollRequest.removeListSelectionListener(handler);
+		for(Notification i : requestList)
+			requests.addElement(i);
+		scrollRequest.addListSelectionListener(handler);
+		scrollRequest.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		updateRequest();
+		
+	}
+	
 	/**
 	 * Clears all text fields
 	 */
@@ -464,6 +539,10 @@ public class GUI extends JFrame {
 		viewISBN.setText(""); modISBN.setText(""); addISBN.setText("");
 		viewName.setText(""); modName.setText(""); addName.setText("");
 		viewGrade.setText(""); modGrade.setText(""); addGrade.setText("");
+	}
+	
+	public void refreshRequest(){
+		viewRequestRoom.setText(""); viewRequestNum.setText(""); viewRequestTitle.setText(""); viewIfBorrow.setText(""); 
 	}
 	public void update(){
 		if(!scrollList.isSelectionEmpty()){
@@ -480,30 +559,48 @@ public class GUI extends JFrame {
 			modPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
 			modISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
 			modGrade.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getGrade());
-
+		}
+	}
+		
+	public void updateRequest(){
+		if(!scrollRequest.isSelectionEmpty()){
+			viewRequestNum.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringNumBooks());
+			viewRequestRoom.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringRoom());
+			viewRequestTitle.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getTitle());
+			viewIfBorrow.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getIfBorrow());
 		}
 	}
 	
-	public JPanel setRequestGUI(){
+	public void updateReply(){
+		if(!scrollReply.isSelectionEmpty()){
+			replyCopies.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getCopies());
+			ifAccepted.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getAcceptance());
+			replyTitle.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getTitle());
+			replyIfBorrow.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).toBorrow());
+		}
+	}
+
+	public JPanel setRequestGUI() throws IOException{
 		JPanel requestPane = new JPanel();
 		JPanel informationPane = new JPanel();
 
-		DefaultListModel requests = new DefaultListModel();
-                
-		JList scrollRequest = new JList(requests);
-		
 		JScrollPane list = new JScrollPane(scrollRequest, 
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		
 		JLabel label1 = new JLabel("Title: ");
 		JLabel label2 = new JLabel("# of Book: ");
+		JLabel label3 = new JLabel("Room Number: ");
+		JLabel label4 = new JLabel("Check-Out/ReturnS: ");
 
 		viewRequestNum = new JTextField();
 		viewRequestTitle = new JTextField();
+		viewRequestRoom = new JTextField();
+		viewIfBorrow = new JTextField();
+
+		viewRequestNum.setEditable(false); viewRequestTitle.setEditable(false); 
+		viewRequestRoom.setEditable(false); viewIfBorrow.setEditable(false);
 		
-		viewRequestNum.setEditable(false); viewRequestTitle.setEditable(false);
 		        
 		GroupLayout layout = new GroupLayout(informationPane);
 		informationPane.setLayout(layout);
@@ -515,10 +612,14 @@ public class GUI extends JFrame {
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                 	.addComponent(label1)
                 	.addComponent(label2)
+                	.addComponent(label3)
+                	.addComponent(label4)
                 	.addComponent(accept))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(viewRequestTitle)
                     .addComponent(viewRequestNum)
+                    .addComponent(viewRequestRoom)
+                    .addComponent(viewIfBorrow)
             		.addComponent(decline)));
            
         layout.setVerticalGroup(layout.createSequentialGroup()
@@ -529,6 +630,12 @@ public class GUI extends JFrame {
                 	.addComponent(label2)
                 	.addComponent(viewRequestNum))
                 .addGroup(layout.createParallelGroup()
+                    .addComponent(label3)
+                    .addComponent(viewRequestRoom))
+                .addGroup(layout.createParallelGroup()
+                	.addComponent(label4)
+                	.addComponent(viewIfBorrow))
+                .addGroup(layout.createParallelGroup()
                     .addComponent(accept)
                     .addComponent(decline)));
 
@@ -537,6 +644,62 @@ public class GUI extends JFrame {
 		requestPane.add(list);
 		requestPane.add(informationPane);
 		return requestPane;
+	}
+	
+	public JPanel setReplyGUI() throws IOException{
+		JPanel replyPane = new JPanel();
+		JPanel informationPane = new JPanel();
+		
+		JScrollPane list = new JScrollPane(scrollReply, 
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		JLabel label1 = new JLabel("Borrow/Return: ");
+		JLabel label2 = new JLabel("# of Books: ");
+		JLabel label3 = new JLabel("Title: ");
+		JLabel label4 = new JLabel("Approved/Declined: ");
+
+		ifAccepted.setEditable(false);
+		replyCopies.setEditable(false);
+		replyTitle.setEditable(false);
+		replyIfBorrow.setEditable(false);
+		
+		GroupLayout layout = new GroupLayout(informationPane);
+		informationPane.setLayout(layout);
+
+		layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+       
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                	.addComponent(label3)
+                	.addComponent(label2)
+                	.addComponent(label1)
+                	.addComponent(label4))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(replyTitle)
+                    .addComponent(replyCopies)
+                    .addComponent(replyIfBorrow)
+                    .addComponent(ifAccepted)));
+           
+        layout.setVerticalGroup(layout.createSequentialGroup()
+        		.addGroup(layout.createParallelGroup()
+                	.addComponent(label3)
+                	.addComponent(replyTitle))
+                .addGroup(layout.createParallelGroup()
+                	.addComponent(label2)
+                	.addComponent(replyCopies))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(label1)
+                    .addComponent(replyIfBorrow))
+                .addGroup(layout.createParallelGroup()
+                	.addComponent(label4)
+                	.addComponent(ifAccepted)));
+        
+		replyPane.setLayout(new GridLayout(1,2));
+		replyPane.add(list);
+		replyPane.add(informationPane);
+		return replyPane;
 	}
 
 	
@@ -585,7 +748,7 @@ public class GUI extends JFrame {
 					choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
 							, "Confirm", JOptionPane.YES_NO_OPTION);
 					if(choice == 0){
-						database.remove(scrollList.getSelectedIndex());
+						database.remove(database.indexOf((InventoryObject) scrollList.getSelectedValue()));
 						updateJList();
 						refresh();
 					}
@@ -597,8 +760,52 @@ public class GUI extends JFrame {
 							&& requestRoom.getText().matches("[-+]?\\d*\\.?\\d+") && !requestRoom.getText().contains(".")){
 						choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
 								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
-						if(choice == 0)
-							System.out.println("K");
+						if(choice == 0){
+							System.out.println("K"); 
+						try
+						{
+						    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+						    String filename= "Database/Notifications.txt";
+						    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+						    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
+						    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow\n");//appends the string to the file
+						    fw.close();
+						}
+						catch(IOException ioe)
+						{
+						    System.err.println("IOException: " + ioe.getMessage());
+						}
+					}
+						else
+							System.out.println("get out then");
+					}else{
+						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
+				
+				if(event.getSource() == returnRequest){
+					if(checkOut.getText().matches("[-+]?\\d*\\.?\\d+") && !checkOut.getText().contains(".") && Integer.parseInt(checkOut.getText()) > 0 
+							&& Integer.parseInt(checkOut.getText()) <= Integer.parseInt(database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getNum())
+							&& requestRoom.getText().matches("[-+]?\\d*\\.?\\d+") && !requestRoom.getText().contains(".")){
+						choice = JOptionPane.showConfirmDialog(null, "You are about to request a return of " + checkOut.getText() + " books.\n" +
+								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
+						if(choice == 0){
+							System.out.println("K"); 
+						try
+						{
+						    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+						    String filename= "Database/Notifications.txt";
+						    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+						    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
+						    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return\n");//appends the string to the file
+						    fw.close();
+						}
+						catch(IOException ioe)
+						{
+						    System.err.println("IOException: " + ioe.getMessage());
+						}
+					}
 						else
 							System.out.println("get out then");
 					}else{
@@ -628,13 +835,96 @@ public class GUI extends JFrame {
 			}
 	
 			if(event.getSource() == viewRequests){
-				JOptionPane.showConfirmDialog(null, setRequestGUI(), "Requests:", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE);
+				try {
+					JOptionPane.showConfirmDialog(null, setRequestGUI(), "Requests:", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE);
+				} catch (HeadlessException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			if(event.getSource() == accept)
+			
+			if(event.getSource() == viewMessages){
+				try {
+					JOptionPane.showConfirmDialog(null, setReplyGUI(), "Replies:", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE);
+				} catch (HeadlessException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(event.getSource() == accept){
 				JOptionPane.showMessageDialog(null, "Request Accepted", "Request", JOptionPane.INFORMATION_MESSAGE);
+				Notification current = requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
+				int requested = current.getNumBooks();
+				int foundIndex = -1;
+				for(int i = 0; i < database.size(); i++){
+					if (current.getTitle().equals(database.get(i).getName()))
+						foundIndex = i;
+				}
+				System.out.println(foundIndex);
+				InventoryObject requestedBook = database.get(foundIndex);
+				int inventory = Integer.parseInt(requestedBook.getNum());
+				int set;
+				if (current.isBorrow())
+					set = inventory-requested;
+				else
+					set = inventory+requested;
+				if (foundIndex >= 0 && set >= 0){
+					requestedBook.setNum(""+set);
+					try
+					{
+					    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+					    String filename= "Database/ReturnMsg.txt";
+					    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+					    Notification noti = requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())); 
+					    String borrow;
+					    if(requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())).isBorrow())
+					    	borrow = "to Borrow";
+					    else
+					    	borrow = "to Return";
+					    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ user + "; "+ noti.getRoom() +"; "+ borrow + "; " + "true\n");//appends the string to the file
+					    fw.close();
+					}
+					catch(IOException ioe)
+					{
+					    System.err.println("IOException: " + ioe.getMessage());
+					}
+					requestList.remove(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
+					updateJListRequest();
+					refreshRequest();
+				}
+				else
+					JOptionPane.showMessageDialog(null, "Error: Requested amount exceeded current inventory", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+				
 
-			if(event.getSource() == decline)
+			if(event.getSource() == decline){
 				JOptionPane.showMessageDialog(null, "Request Declined", "Request", JOptionPane.INFORMATION_MESSAGE);
+				try
+				{
+				    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+				    String filename= "Database/ReturnMsg.txt";
+				    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+				    Notification noti = requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())); 
+				    String borrow;
+				    if(requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())).isBorrow())
+				    	borrow = "to Borrow";
+				    else
+				    	borrow = "to Return";
+				    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ user + "; "+ noti.getRoom() +"; "+ borrow + "; " + "false\n");//appends the string to the file
+				    fw.close();
+				}
+				catch(IOException ioe)
+				{
+				    System.err.println("IOException: " + ioe.getMessage());
+				}
+				requestList.remove(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
+				updateJListRequest();
+				refreshRequest();
+			}
+			
 
 				
 			update();
@@ -657,9 +947,24 @@ public class GUI extends JFrame {
 		 * database to the selected element
 		 */
 		public void valueChanged(ListSelectionEvent event) {
-			if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
-				update();
+			if(event.getSource() == scrollList){
+				if(!event.getValueIsAdjusting() && !scrollList.isSelectionEmpty()){
+					update();
+				}
 			}
+				
+			if(event.getSource() == scrollRequest){
+				if(!event.getValueIsAdjusting() && !scrollRequest.isSelectionEmpty()){
+					updateRequest();
+				}
+			}
+			
+			if(event.getSource() ==  scrollReply){
+				if(!event.getValueIsAdjusting() && !scrollReply.isSelectionEmpty()){
+					updateReply();
+				}
+			}	
+			
 		}
 	 
 	}

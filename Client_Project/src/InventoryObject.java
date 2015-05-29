@@ -1,6 +1,10 @@
-
 public class InventoryObject {
-	private String name, grade, room, num, price, ISBN;
+	private String name;
+	private String grade;
+	private String room;
+	private String num;
+	private String price;
+	private String ISBN;
 	
 	public InventoryObject(String line){
 		String[] data = line.split("\t");
@@ -49,5 +53,14 @@ public class InventoryObject {
 	}
 	public void setISBN(String iSBN) {
 		ISBN = iSBN;
+	}
+	
+	public boolean equals(InventoryObject other){
+		String otherTitle = other.getName();
+		String current = this.getName();
+		if(current.equals(otherTitle))
+			return true;
+		else
+			return false;
 	}
 }
