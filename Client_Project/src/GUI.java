@@ -296,7 +296,7 @@ public class GUI extends JFrame {
         modData.add(information, c);
         setGrid(c, 0, 3, 1, 0);
 		modData.add(viewMessages, c);
-        setGrid(c, 0, 4, 1, 0);
+        setGrid(c, 0, 4, 1, 1);
 		modData.add(new JLabel(""), c);
 		checkOutTab.setLayout(new GridLayout(1, 2));		
 		checkOutTab.add(modData);
