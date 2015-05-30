@@ -5,10 +5,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.*;
-
 import javax.swing.event.*;
 import javax.swing.*;
 
+/**
+ * The class that constitutes the bulk of the GUI.
+ * Not meant to be a reusable class object, however
+ * can be called within other classes, as in LoginGUI.java
+ * 
+ * @author Cosmic42
+ *
+ */
 public class GUI extends JFrame {
 	
 	private JList scrollList, scrollRequest, scrollReply;
@@ -31,6 +38,7 @@ public class GUI extends JFrame {
 	/**
 	 * The constructor for the GUI that initializes all fields.
 	 * Also calls the methods to format each JPanel in the GUI
+	 * Includes the setup for the request viewing and book list
 	 * @throws IOException
 	 */
 	public GUI(Teacher user) throws IOException{
@@ -38,9 +46,6 @@ public class GUI extends JFrame {
 		
 		this.user = user;
 		handler = new GUIHandler();
-		
-		
-		
 		
 		FileReader fileReader = new FileReader("Database/database.txt");
 		BufferedReader bufferReader = new BufferedReader(fileReader);
@@ -59,8 +64,6 @@ public class GUI extends JFrame {
             filter.addElement(i);
         
 		scrollList = new JList(filter);
-		
-		
 		
 		
 		FileReader fileReaderRequest = new FileReader("Database/Notifications.txt");
@@ -82,9 +85,6 @@ public class GUI extends JFrame {
 		scrollRequest.addListSelectionListener(handler);
 		scrollRequest.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		
-		
-		
 		FileReader fileReaderMessage = new FileReader("Database/ReturnMsg.txt");
 		BufferedReader bufferReaderMessage = new BufferedReader(fileReaderMessage);
 		replyList = new ArrayList<Message>();
@@ -105,8 +105,6 @@ public class GUI extends JFrame {
 		
 		scrollReply.addListSelectionListener(handler);
 		scrollReply.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		
 		
 		
 		tabs = new JTabbedPane();
@@ -237,15 +235,18 @@ public class GUI extends JFrame {
 		tabs.addTab("Inventory", inventoryTab);
 						
 	}
+	
 	/**
 	 * Sets up the Check-out tab in the GUI
-	 * Uses GridBagLayout and GroupLayout
+	 * Utilizes both GridBagLayout and GroupLayout for formatting
+	 * the GUI
 	 */
 	public void setCheckOutTab(){
 		JPanel modData = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
 		JLabel label2 = new JLabel("To/From Room: ");
 		checkOutButton.addActionListener(handler);
+		returnRequest.addActionListener(handler);
 		viewMessages.addActionListener(handler);
 		
 		
@@ -304,9 +305,11 @@ public class GUI extends JFrame {
 		tabs.addTab("Check-Out/Returns", checkOutTab);
 				
 	}
+	
 	/**
 	 * Sets up the Modifying inventory tab
-	 * Utilizes GridBagLayout and GroupLayout
+	 * Utilizes both GridBagLayout and GroupLayout for formatting
+	 * the GUI
 	 * Essentially a clone of setInventoryTab,
 	 * however it uses different fields
 	 */
@@ -409,6 +412,14 @@ public class GUI extends JFrame {
 				
 	}	
 	
+	/**
+	 * A method meant to  be used once. Returns a JPanel
+	 * that contains all of the fields required for adding
+	 * a book. 
+	 * Utilizes both GridBagLayout and GroupLayout for formatting
+	 * the GUI
+	 * @return
+	 */
 	public JPanel addBookForm(){
 		JPanel addData = new JPanel();
 		JLabel label1 = new JLabel("Title: ");
@@ -475,111 +486,17 @@ public class GUI extends JFrame {
 		setGrid(c, 0, 2, 1, 0);
 		return addData;
 	}
-
 	
 	/**
-	 * Sets out the constraints for the GridBagLayout
-	 * with the given parameters
-	 * @param c
-	 * @param gridx
-	 * @param gridy
-	 * @param weightx
-	 * @param weighty
+	 * A method meant to  be used once. Returns a JPanel
+	 * that contains all of the fields required for viewing
+	 * requests. 
+	 * Utilizes both GridBagLayout and GroupLayout for formatting
+	 * the GUI
+	 * 
+	 * @return
 	 */
-	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
-		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
-	}
-		
-	/**
-	 * Searches through the JList to find matches
-	 * Updates the list on the GUI
-	 */
-	public void searchJList(){
-		filter.clear();
-		scrollList.removeListSelectionListener(handler);
-        for(InventoryObject i : database)
-			if(i.getName().toUpperCase().contains(search.getText().toUpperCase()))
-				filter.addElement(i);
-        scrollList.addListSelectionListener(handler);
-		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		refresh();
-	}
 	
-	public void updateJList(){
-        int index = scrollList.getSelectedIndex();
-		filter.clear();
-		scrollList.removeListSelectionListener(handler);
-        for(InventoryObject i : database)
-			if(i.getName().toUpperCase().contains(search.getText().toUpperCase()))
-				filter.addElement(i);
-        scrollList.addListSelectionListener(handler);
-		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollList.setSelectedIndex(index);
-		update();
-	}
-	
-	public void updateJListRequest(){
-		requests.clear();
-		scrollRequest.removeListSelectionListener(handler);
-		for(Notification i : requestList)
-			requests.addElement(i);
-		scrollRequest.addListSelectionListener(handler);
-		scrollRequest.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		updateRequest();
-		
-	}
-	
-	/**
-	 * Clears all text fields
-	 */
-	public void refresh(){
-		viewNum.setText(""); modNum.setText(""); addNum.setText("");
-		viewRoom.setText(""); modRoom.setText(""); addRoom.setText("");
-		viewPrice.setText(""); modPrice.setText(""); addPrice.setText("");
-		viewISBN.setText(""); modISBN.setText(""); addISBN.setText("");
-		viewName.setText(""); modName.setText(""); addName.setText("");
-		viewGrade.setText(""); modGrade.setText(""); addGrade.setText("");
-	}
-	
-	public void refreshRequest(){
-		viewRequestRoom.setText(""); viewRequestNum.setText(""); viewRequestTitle.setText(""); viewIfBorrow.setText(""); 
-	}
-	public void update(){
-		if(!scrollList.isSelectionEmpty()){
-			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
-			viewRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
-			viewPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
-			viewISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
-			viewName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
-			viewGrade.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getGrade());
-
-			modName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
-			modNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
-			modRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
-			modPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
-			modISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
-			modGrade.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getGrade());
-		}
-	}
-		
-	public void updateRequest(){
-		if(!scrollRequest.isSelectionEmpty()){
-			viewRequestNum.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringNumBooks());
-			viewRequestRoom.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringRoom());
-			viewRequestTitle.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getTitle());
-			viewIfBorrow.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getIfBorrow());
-		}
-	}
-	
-	public void updateReply(){
-		if(!scrollReply.isSelectionEmpty()){
-			replyCopies.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getCopies());
-			ifAccepted.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getAcceptance());
-			replyTitle.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getTitle());
-			replyIfBorrow.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).toBorrow());
-		}
-	}
-
 	public JPanel setRequestGUI() throws IOException{
 		JPanel requestPane = new JPanel();
 		JPanel informationPane = new JPanel();
@@ -591,7 +508,7 @@ public class GUI extends JFrame {
 		JLabel label1 = new JLabel("Title: ");
 		JLabel label2 = new JLabel("# of Book: ");
 		JLabel label3 = new JLabel("Room Number: ");
-		JLabel label4 = new JLabel("Check-Out/ReturnS: ");
+		JLabel label4 = new JLabel("Check-Out/Returns: ");
 
 		viewRequestNum = new JTextField();
 		viewRequestTitle = new JTextField();
@@ -645,6 +562,16 @@ public class GUI extends JFrame {
 		requestPane.add(informationPane);
 		return requestPane;
 	}
+	
+	/**
+	 * A method meant to  be used once. Returns a JPanel
+	 * that contains all of the fields required for viewing
+	 * replies to requests. 
+	 * Utilizes both GridBagLayout and GroupLayout for formatting
+	 * the GUI
+	 * 
+	 * @return
+	 */
 	
 	public JPanel setReplyGUI() throws IOException{
 		JPanel replyPane = new JPanel();
@@ -703,15 +630,163 @@ public class GUI extends JFrame {
 	}
 
 	
+	/**
+	 * Sets out the constraints for the GridBagLayout
+	 * with the given parameters. 
+	 * 
+	 * @param c
+	 * @param gridx
+	 * @param gridy
+	 * @param weightx
+	 * @param weighty
+	 */
+	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
+		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
+	}
+		
+	/**
+	 * Searches through the JList to find matches
+	 * Results the list and puts in elements that match the search box
+	 * Updates the list on the GUI and refreshes the lists.
+	 * 
+	 */
+	public void searchJList(){
+		filter.clear();
+		scrollList.removeListSelectionListener(handler);
+        for(InventoryObject i : database)
+			if(i.getName().toUpperCase().contains(search.getText().toUpperCase()))
+				filter.addElement(i);
+        scrollList.addListSelectionListener(handler);
+		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		refresh();
+	}
+	
+	/**
+	 * A method that updates the scrollable list for books.
+	 * Is used to save and then reselect a nearby index when the list resets due
+	 * to an action such as deleting or adding a book.
+	 */
+	public void updateJList(){
+        int index = scrollList.getSelectedIndex();
+		filter.clear();
+		scrollList.removeListSelectionListener(handler);
+        for(InventoryObject i : database)
+			if(i.getName().toUpperCase().contains(search.getText().toUpperCase()))
+				filter.addElement(i);
+        scrollList.addListSelectionListener(handler);
+		scrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollList.setSelectedIndex(index);
+		update();
+	}
+	
+	public void updateJListRequest(){
+		requests.clear();
+		scrollRequest.removeListSelectionListener(handler);
+		for(Notification i : requestList)
+			requests.addElement(i);
+		scrollRequest.addListSelectionListener(handler);
+		scrollRequest.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		updateRequest();
+		
+	}
+	
+	/**
+	 * Clears all text fields in the inventory tab and the
+	 * modifying inventory tab.
+	 */
+	public void refresh(){
+		viewNum.setText(""); modNum.setText(""); addNum.setText("");
+		viewRoom.setText(""); modRoom.setText(""); addRoom.setText("");
+		viewPrice.setText(""); modPrice.setText(""); addPrice.setText("");
+		viewISBN.setText(""); modISBN.setText(""); addISBN.setText("");
+		viewName.setText(""); modName.setText(""); addName.setText("");
+		viewGrade.setText(""); modGrade.setText(""); addGrade.setText("");
+	}
+	
+	/**
+	 * Clears all text fields in the request panel. Doesn't
+	 * return anything since all of the elements are fields
+	 * of the class.
+	 */
+	public void refreshRequest(){
+		viewRequestRoom.setText(""); viewRequestNum.setText(""); viewRequestTitle.setText(""); viewIfBorrow.setText(""); 
+	}
+	
+	/**
+	 * Updates every text field in the inventory tab and the
+	 * modifying inventory tab with their respective value.
+	 * Doesn't return anything since all of the elements are
+	 * fields of the class.
+	 */
+	public void update(){
+		if(!scrollList.isSelectionEmpty()){
+			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
+			viewRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
+			viewPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
+			viewISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
+			viewName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
+			viewGrade.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getGrade());
+
+			modName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
+			modNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
+			modRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
+			modPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
+			modISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
+			modGrade.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getGrade());
+		}
+	}
+	
+	/**
+	 * Updates every text field in the viewing requests panel
+	 * with their respective value.
+	 * Doesn't return anything since all of the elements are
+	 * fields of the class.
+	 */
+	public void updateRequest(){
+		if(!scrollRequest.isSelectionEmpty()){
+			viewRequestNum.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringNumBooks());
+			viewRequestRoom.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringRoom());
+			viewRequestTitle.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getTitle());
+			viewIfBorrow.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getIfBorrow());
+		}
+	}
+	
+	/**
+	 * Updates every text field in the replies to request
+	 * panel with their respective value.
+	 * Doesn't return anything since all of the elements are
+	 * fields of the class.
+	 */
+	public void updateReply(){
+		if(!scrollReply.isSelectionEmpty()){
+			replyCopies.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getCopies());
+			ifAccepted.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getAcceptance());
+			replyTitle.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).getTitle());
+			replyIfBorrow.setText(((Message) replies.elementAt(((scrollReply.getSelectedIndex())))).toBorrow());
+		}
+	}
+
+	
 //--------------------------------------------------------------------------------------------------------------------------\\	
 	
-	
+	/**
+	 * Nested class within the main class itself that implements various
+	 * event listeners. Allows for the fields of the GUI class to
+	 * implement the eventListeners, which can detect which field is which
+	 * rather than assigning commands. 
+	 * 
+	 * @author Cosmic42
+	 *
+	 */
 	public class GUIHandler implements ActionListener, DocumentListener, ListSelectionListener{
 	
 		/**
 		 * Action Listeners for buttons and text fields.
-		 * Includes setting text, handling requests, and
-		 * updating database
+		 * Includes setting text, handling requests, accepting and declining requests,
+		 * deleting and adding books, viewing requests and messages, and
+		 * updating database. Text field sources updates the
+		 * database with the input. Only the modNUm
+		 * and checkOut fields are dummy-proofed.
 		 */
 		
 		public void actionPerformed(ActionEvent event) {
@@ -761,23 +836,20 @@ public class GUI extends JFrame {
 						choice = JOptionPane.showConfirmDialog(null, "You are about to order " + checkOut.getText() + " books.\n" +
 								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
 						if(choice == 0){
-							System.out.println("K"); 
-						try
-						{
-						    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
-						    String filename= "Database/Notifications.txt";
-						    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-						    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
-						    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow\n");//appends the string to the file
-						    fw.close();
+							try
+							{
+							    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+							    String filename= "Database/Notifications.txt";
+							    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+							    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
+							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow\n");//appends the string to the file
+							    fw.close();
+							}
+							catch(IOException ioe)
+							{
+							    System.err.println("IOException: " + ioe.getMessage());
+							}
 						}
-						catch(IOException ioe)
-						{
-						    System.err.println("IOException: " + ioe.getMessage());
-						}
-					}
-						else
-							System.out.println("get out then");
 					}else{
 						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
 					}
@@ -791,23 +863,20 @@ public class GUI extends JFrame {
 						choice = JOptionPane.showConfirmDialog(null, "You are about to request a return of " + checkOut.getText() + " books.\n" +
 								"Is this correct?", "Confirm", JOptionPane.YES_NO_OPTION);
 						if(choice == 0){
-							System.out.println("K"); 
-						try
-						{
-						    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
-						    String filename= "Database/Notifications.txt";
-						    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-						    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
-						    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return\n");//appends the string to the file
-						    fw.close();
+							try
+							{
+							    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+							    String filename= "Database/Notifications.txt";
+							    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+							    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
+							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return\n");//appends the string to the file
+							    fw.close();
+							}
+							catch(IOException ioe)
+							{
+							    System.err.println("IOException: " + ioe.getMessage());
+							}
 						}
-						catch(IOException ioe)
-						{
-						    System.err.println("IOException: " + ioe.getMessage());
-						}
-					}
-						else
-							System.out.println("get out then");
 					}else{
 						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
 					}
@@ -863,7 +932,7 @@ public class GUI extends JFrame {
 					if (current.getTitle().equals(database.get(i).getName()))
 						foundIndex = i;
 				}
-				System.out.println(foundIndex);
+
 				InventoryObject requestedBook = database.get(foundIndex);
 				int inventory = Integer.parseInt(requestedBook.getNum());
 				int set;
@@ -875,16 +944,15 @@ public class GUI extends JFrame {
 					requestedBook.setNum(""+set);
 					try
 					{
-					    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
 					    String filename= "Database/ReturnMsg.txt";
-					    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+					    FileWriter fw = new FileWriter(filename,true);
 					    Notification noti = requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())); 
 					    String borrow;
 					    if(requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())).isBorrow())
 					    	borrow = "to Borrow";
 					    else
 					    	borrow = "to Return";
-					    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ user + "; "+ noti.getRoom() +"; "+ borrow + "; " + "true\n");//appends the string to the file
+					    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ current.getTeacher() + "; "+ noti.getRoom() +"; "+ borrow + "; " + "true\n");//appends the string to the file
 					    fw.close();
 					}
 					catch(IOException ioe)
@@ -930,14 +998,16 @@ public class GUI extends JFrame {
 			update();
 		}
 	
+		/**
+		 * DocumentListener methods used for the search text fields.
+		 * Runs searchJList if the text field has text added or removed.
+		 */
 		public void changedUpdate(DocumentEvent event) {
 			searchJList();
 		}
-	
 		public void insertUpdate(DocumentEvent event) {
 			searchJList();
 		}
-	
 		public void removeUpdate(DocumentEvent event) {
 			searchJList();
 		}

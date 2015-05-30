@@ -8,6 +8,13 @@ public class Teacher{
 	private String name, username, password;
 	private boolean admin;
 	
+	public Teacher(String name, String username, String password, boolean admin){
+		this.name = name;
+		this.username = username;
+		this.password = password;
+		this.admin = admin;
+	}
+	
 	public boolean isAdmin(){
 		return admin;
 	}
@@ -28,12 +35,6 @@ public class Teacher{
 		this.password = password;
 	}
 	
-	public Teacher(String name, String username, String password, boolean admin){
-		this.name = name;
-		this.username = username;
-		this.password = password;
-		this.admin = admin;
-	}
 	public String toString(){
 		return name;
 	}

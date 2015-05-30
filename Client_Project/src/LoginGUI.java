@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.awt.event.*;
 import javax.swing.*;
 
+/**
+ * The class that constitutes the login portion of the GUI.
+ * Not meant to be a reusable class object, but can be used
+ * in other classes.  
+ * 
+ * @author Cosmic42
+ *
+ */
 public class LoginGUI extends JFrame {
 	
 	private ArrayList<Teacher> users;
@@ -44,8 +52,10 @@ public class LoginGUI extends JFrame {
 		add(login);
 	}
 
-
-	
+	/**
+	 * Creates the JPanel for the login screen. Uses GroupLayout for format. 
+	 * 
+	 */
 	public void loginScreen(){
 		JLabel label1 = new JLabel("Username: ");
 		JLabel label2 = new JLabel("Password: ");
@@ -83,6 +93,16 @@ public class LoginGUI extends JFrame {
                   	.addComponent(loginButton)));
 	}
 	
+	/**
+	 * Boolean method that takes in a username string and a password string,
+	 * and compares them to the list of users in the database.
+	 * Returns true if it matches and saves the user, returns false
+	 * if there is no match. 
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public boolean checkUser(String username, String password){
 		for(Teacher teacher : users)
 			if(teacher.getUsername().toLowerCase().equals(username.toLowerCase()) && teacher.getPassword().equals(password)){
@@ -92,6 +112,12 @@ public class LoginGUI extends JFrame {
 		return false;
 	}
 	
+	/**
+	 * Method that closes this JFrame and begins to setup the 
+	 * main GUI. Placed in a separate method instead of with 
+	 * the actionListeners for organizational purposes. 
+	 * @throws IOException
+	 */
 	public void setInventoryGUI() throws IOException{
 		this.dispose();
 		
@@ -112,6 +138,9 @@ public class GUIHandler implements ActionListener{
 
 	/**
 	 * Action Listeners for buttons and text fields.
+	 * If the login username and password don't match any
+	 * logins in the database, then reject. Otherwise, continue
+	 * and setup the main GUI. 
 	 */
 	
 	public void actionPerformed(ActionEvent event){
