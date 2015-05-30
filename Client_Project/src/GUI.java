@@ -13,7 +13,7 @@ import javax.swing.*;
  * Not meant to be a reusable class object, however
  * can be called within other classes, as in LoginGUI.java
  * 
- * @author Cosmic42
+ * @author Cosmic42 (Wally) & Hannah
  *
  */
 public class GUI extends JFrame {

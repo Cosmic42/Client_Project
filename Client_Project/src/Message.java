@@ -1,7 +1,7 @@
 /**
  * This class contains the messages for requests on returning
  * and requesting
- * @author Cosmic42
+ * @author Hannah
  *
  */
 public class Message {

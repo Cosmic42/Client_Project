@@ -11,7 +11,7 @@ import javax.swing.*;
  * Not meant to be a reusable class object, but can be used
  * in other classes.  
  * 
- * @author Cosmic42
+ * @author Cosmic42 (Wally)
  *
  */
 public class LoginGUI extends JFrame {

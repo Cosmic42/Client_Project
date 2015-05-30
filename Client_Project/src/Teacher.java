@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * This class represents a teacher, or user. Includes a name, password, username,
  * and admin status
- * @author Cosmic42
+ * @author Henry & Kevin
  *
  */
 public class Teacher{

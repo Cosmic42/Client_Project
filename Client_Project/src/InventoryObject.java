@@ -2,7 +2,7 @@
  * This class represents a book in the inventory.
  * Includes the books name, grade, room, number, price,
  * and ISBN.
- * @author Cosmic42
+ * @author Cosmic42 (Wally)
  *
  */
 public class InventoryObject {
