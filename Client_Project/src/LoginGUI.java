@@ -99,9 +99,10 @@ public class LoginGUI extends JFrame {
 	 * Returns true if it matches and saves the user, returns false
 	 * if there is no match. 
 	 * 
-	 * @param username
-	 * @param password
-	 * @return
+	 * @param username	Username in the input
+	 * @param password	Password in the input
+	 * @return a boolean variable for whether the user entered 
+	 * password and username correctly or not
 	 */
 	public boolean checkUser(String username, String password){
 		for(Teacher teacher : users)

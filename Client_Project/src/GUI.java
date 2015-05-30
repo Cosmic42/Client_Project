@@ -418,7 +418,7 @@ public class GUI extends JFrame {
 	 * a book. 
 	 * Utilizes both GridBagLayout and GroupLayout for formatting
 	 * the GUI
-	 * @return
+	 * @return A JPanel for the book form for adding a book
 	 */
 	public JPanel addBookForm(){
 		JPanel addData = new JPanel();
@@ -494,7 +494,7 @@ public class GUI extends JFrame {
 	 * Utilizes both GridBagLayout and GroupLayout for formatting
 	 * the GUI
 	 * 
-	 * @return
+	 * @return a JPanel for the viewing of requests
 	 */
 	
 	public JPanel setRequestGUI() throws IOException{
@@ -570,7 +570,7 @@ public class GUI extends JFrame {
 	 * Utilizes both GridBagLayout and GroupLayout for formatting
 	 * the GUI
 	 * 
-	 * @return
+	 * @return a JPanel for the viewing of the replies to requests
 	 */
 	
 	public JPanel setReplyGUI() throws IOException{
@@ -634,11 +634,11 @@ public class GUI extends JFrame {
 	 * Sets out the constraints for the GridBagLayout
 	 * with the given parameters. 
 	 * 
-	 * @param c
-	 * @param gridx
-	 * @param gridy
-	 * @param weightx
-	 * @param weighty
+	 * @param c	The GridBagConstraints variable that determines the layout of the object
+	 * @param gridx	Grid position on the x-axis of the object
+	 * @param gridy	Grid position on the y-axis of the object
+	 * @param weightx	How much space the object should leave out on the x-axis
+	 * @param weighty	How much space the object should leave out on the y-axis
 	 */
 	public void setGrid(GridBagConstraints c, int gridx, int gridy, double weightx, double weighty){
 		c.weightx = weightx; c.weighty = weighty; c.gridx = gridx; c.gridy = gridy;
