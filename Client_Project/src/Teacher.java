@@ -1,7 +1,3 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
 /**
  * This class represents a teacher, or user. Includes a name, password, username,
  * and admin status

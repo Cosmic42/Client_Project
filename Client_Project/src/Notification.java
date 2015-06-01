@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 /**
  * Class for the notification system in the book inventory program
  * @author Hannah
