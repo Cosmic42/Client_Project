@@ -28,10 +28,10 @@ public class GUI extends JFrame {
 	private JTextField search, viewNum, viewPrice, viewISBN, viewRoom, viewName, viewGrade; 
 	private JTextField modNum, modPrice, modISBN, modRoom, modName, modGrade;
 	private JTextField addNum, addPrice, addISBN, addRoom, addName, addGrade;
-	private JTextField checkOut, requestRoom, viewRequestNum, viewRequestTitle, viewRequestRoom, viewIfBorrow;
+	private JTextField checkOut, requestRoom, viewRequestNum, viewRequestTitle, viewRequestRoom, viewIfBorrow, viewStatus;
 	private JTextField ifAccepted, replyCopies, replyTitle, replyIfBorrow;
 	private JButton checkOutButton, deleteBook, addBook, plusBook, minusBook, viewRequests, accept, decline, returnRequest;
-	private JButton viewMessages;
+	private JButton viewMessages, deleteRequest;
 	private Teacher user;
 	private GUIHandler handler;
 
@@ -122,10 +122,11 @@ public class GUI extends JFrame {
 		checkOutButton = new JButton("Request"); deleteBook = new JButton("Delete Book");
 		addBook = new JButton("Add Book"); plusBook = new JButton("+"); minusBook = new JButton("-");
 		viewRequests = new JButton("View Requests"); accept = new JButton("Accept"); decline = new JButton("Decline");
-		returnRequest = new JButton("Return"); 
+		returnRequest = new JButton("Return"); deleteRequest = new JButton("Delete"); 
 		viewMessages = new JButton("View Replies");
 		accept.addActionListener(handler);
 		decline.addActionListener(handler);
+		deleteRequest.addActionListener(handler);
 		ifAccepted = new JTextField(); replyCopies = new JTextField(); replyTitle = new JTextField(); replyIfBorrow = new JTextField();
 		
 		setInventoryTab();
@@ -500,7 +501,12 @@ public class GUI extends JFrame {
 	public JPanel setRequestGUI() throws IOException{
 		JPanel requestPane = new JPanel();
 		JPanel informationPane = new JPanel();
-
+		JPanel buttonPane = new JPanel();
+		
+		buttonPane.add(accept);
+		buttonPane.add(decline);
+		buttonPane.add(deleteRequest);
+		
 		JScrollPane list = new JScrollPane(scrollRequest, 
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -509,15 +515,19 @@ public class GUI extends JFrame {
 		JLabel label2 = new JLabel("# of Book: ");
 		JLabel label3 = new JLabel("Room Number: ");
 		JLabel label4 = new JLabel("Check-Out/Returns: ");
-
+		JLabel label5 = new JLabel("Status: ");
+		JLabel blank = new JLabel("");
+		
 		viewRequestNum = new JTextField();
 		viewRequestTitle = new JTextField();
 		viewRequestRoom = new JTextField();
 		viewIfBorrow = new JTextField();
+		viewStatus = new JTextField();
 
+		
 		viewRequestNum.setEditable(false); viewRequestTitle.setEditable(false); 
 		viewRequestRoom.setEditable(false); viewIfBorrow.setEditable(false);
-		
+		viewStatus.setEditable(false);
 		        
 		GroupLayout layout = new GroupLayout(informationPane);
 		informationPane.setLayout(layout);
@@ -531,13 +541,15 @@ public class GUI extends JFrame {
                 	.addComponent(label2)
                 	.addComponent(label3)
                 	.addComponent(label4)
-                	.addComponent(accept))
+                	.addComponent(label5)
+                	.addComponent(blank))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(viewRequestTitle)
                     .addComponent(viewRequestNum)
                     .addComponent(viewRequestRoom)
                     .addComponent(viewIfBorrow)
-            		.addComponent(decline)));
+                    .addComponent(viewStatus)
+            		.addComponent(buttonPane)));
            
         layout.setVerticalGroup(layout.createSequentialGroup()
         		.addGroup(layout.createParallelGroup()
@@ -553,8 +565,11 @@ public class GUI extends JFrame {
                 	.addComponent(label4)
                 	.addComponent(viewIfBorrow))
                 .addGroup(layout.createParallelGroup()
-                    .addComponent(accept)
-                    .addComponent(decline)));
+                	.addComponent(label5)
+                	.addComponent(viewStatus))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(blank)
+                    .addComponent(buttonPane)));
 
 		
 		requestPane.setLayout(new GridLayout(1,2));
@@ -709,7 +724,7 @@ public class GUI extends JFrame {
 	 * of the class.
 	 */
 	public void refreshRequest(){
-		viewRequestRoom.setText(""); viewRequestNum.setText(""); viewRequestTitle.setText(""); viewIfBorrow.setText(""); 
+		viewRequestRoom.setText(""); viewRequestNum.setText(""); viewRequestTitle.setText(""); viewIfBorrow.setText(""); viewStatus.setText("");
 	}
 	
 	/**
@@ -748,6 +763,8 @@ public class GUI extends JFrame {
 			viewRequestRoom.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStringRoom());
 			viewRequestTitle.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getTitle());
 			viewIfBorrow.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getIfBorrow());
+			viewStatus.setText(((Notification) requests.elementAt(((scrollRequest.getSelectedIndex())))).getStatus());
+
 		}
 	}
 	
@@ -842,7 +859,7 @@ public class GUI extends JFrame {
 							    String filename= "Database/Notifications.txt";
 							    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
 							    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
-							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow\n");//appends the string to the file
+							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow\n" + "; false");//appends the string to the file
 							    fw.close();
 							}
 							catch(IOException ioe)
@@ -869,7 +886,7 @@ public class GUI extends JFrame {
 							    String filename= "Database/Notifications.txt";
 							    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
 							    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
-							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return\n");//appends the string to the file
+							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return\n" + "; false");//appends the string to the file
 							    fw.close();
 							}
 							catch(IOException ioe)
@@ -877,13 +894,11 @@ public class GUI extends JFrame {
 							    System.err.println("IOException: " + ioe.getMessage());
 							}
 						}
-					}else{
+					}else
 						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-					
 				}
 			}
-			
+					
 			if(event.getSource() == addBook){
 				choice = JOptionPane.showConfirmDialog(null, addBookForm(), "Enter Book Information:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				if(choice == 0 && !addNum.getText().equals("") && addNum.getText().matches("[-+]?\\d*\\.?\\d+") && !addPrice.getText().equals("") &&
@@ -932,7 +947,6 @@ public class GUI extends JFrame {
 					if (current.getTitle().equals(database.get(i).getName()))
 						foundIndex = i;
 				}
-
 				InventoryObject requestedBook = database.get(foundIndex);
 				int inventory = Integer.parseInt(requestedBook.getNum());
 				int set;
@@ -942,6 +956,7 @@ public class GUI extends JFrame {
 					set = inventory+requested;
 				if (foundIndex >= 0 && set >= 0){
 					requestedBook.setNum(""+set);
+					requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())).setStatus("Accepted");
 					try
 					{
 					    String filename= "Database/ReturnMsg.txt";
@@ -952,14 +967,13 @@ public class GUI extends JFrame {
 					    	borrow = "to Borrow";
 					    else
 					    	borrow = "to Return";
-					    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ current.getTeacher() + "; "+ noti.getRoom() +"; "+ borrow + "; " + "true\n");//appends the string to the file
+					    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ current.getTeacher() + "; "+ noti.getRoom() +"; "+ borrow + "; " + noti.getStatus() + "; true\n");//appends the string to the file
 					    fw.close();
 					}
 					catch(IOException ioe)
 					{
 					    System.err.println("IOException: " + ioe.getMessage());
 					}
-					requestList.remove(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
 					updateJListRequest();
 					refreshRequest();
 				}
@@ -970,6 +984,7 @@ public class GUI extends JFrame {
 
 			if(event.getSource() == decline){
 				JOptionPane.showMessageDialog(null, "Request Declined", "Request", JOptionPane.INFORMATION_MESSAGE);
+				requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())).setStatus("Declined");
 				try
 				{
 				    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
@@ -981,18 +996,25 @@ public class GUI extends JFrame {
 				    	borrow = "to Borrow";
 				    else
 				    	borrow = "to Return";
-				    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ user + "; "+ noti.getRoom() +"; "+ borrow + "; " + "false\n");//appends the string to the file
+				    fw.write(noti.getTitle() + "; " + noti.getNumBooks() + "; "+ user + "; "+ noti.getRoom() +"; "+ borrow + "; " + noti.getStatus() + "; false\n");//appends the string to the file
 				    fw.close();
 				}
 				catch(IOException ioe)
 				{
 				    System.err.println("IOException: " + ioe.getMessage());
 				}
-				requestList.remove(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
 				updateJListRequest();
 				refreshRequest();
 			}
 			
+			if(event.getSource() == deleteRequest)
+				if(viewStatus.getText().equals("Pending"))
+					JOptionPane.showMessageDialog(null, "Error: Request still Pending", "Error", JOptionPane.ERROR_MESSAGE);
+				else{
+					requestList.remove(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
+					updateJListRequest();
+					refreshRequest();
+				}
 
 				
 			update();

@@ -8,10 +8,10 @@ import java.util.Arrays;
 public class Notification {
 
 	private int numBooks;
-	private String teacher, title;
+	private String teacher, title, status;
 	private int room;
 	boolean borrow;
-
+	
 	/**
 	 * 
 	 * @param title
@@ -21,12 +21,13 @@ public class Notification {
 	 * @param takeOut
 	 */
 	public Notification(String title, int copies, String lastName, int roomNum,
-			boolean takeOut) {
+			boolean takeOut, String response) {
 		this.title = title;
 		numBooks = copies;
 		teacher = lastName;
 		room = roomNum;
 		borrow = takeOut;
+		status = response;
 	}
 
 	/**
@@ -34,6 +35,7 @@ public class Notification {
 	 * @param line
 	 */
 	public Notification(String line) {
+		System.out.println(line);
 		String[] info = line.split("; ");
 		title = info[0];
 		numBooks = numOfBook(info);
@@ -43,6 +45,7 @@ public class Notification {
 			borrow = true;
 		else
 			borrow = false;
+		status = info[5];
 	}
 
 	/**
@@ -150,6 +153,20 @@ public class Notification {
 	public void setBorrow(boolean borrow) {
 		this.borrow = borrow;
 	}
+	
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * Sets variable
+	 * @param teacher
+	 */
+	public void setStatus(String response) {
+		this.status = response;
+	}
+
+	
 /**
  * 
  * @param arr
