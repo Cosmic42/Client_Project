@@ -35,7 +35,6 @@ public class Notification {
 	 * @param line
 	 */
 	public Notification(String line) {
-		System.out.println(line);
 		String[] info = line.split("; ");
 		title = info[0];
 		numBooks = numOfBook(info);
@@ -120,40 +119,45 @@ public class Notification {
 	public String getStringRoom() {
 		return "" + room;
 	}
+	
 	/**
 	 * 
 	 * @return whether the book is requested for checkout or return.
 	 */
-
 	public String getIfBorrow() {
 		if (borrow)
 			return "Request for Check-Out";
 		else
 			return "Request for Return";
 	}
+	
 	/**
 	 * Sets variable
 	 * @param room
 	 */
-
 	public void setRoom(int room) {
 		this.room = room;
 	}
-/**
- * 
- * @return whether the book has been borrowed or not.
- */
+	
+	/**
+	 * 
+	 * @return whether the book has been borrowed or not.
+	 */
 	public boolean isBorrow() {
 		return borrow;
 	}
-/**
- * Sets variable
- * @param borrow
- */
+	/**
+	 * Sets variable
+	 * @param borrow
+	 */
 	public void setBorrow(boolean borrow) {
 		this.borrow = borrow;
 	}
-	
+
+	/**
+	 * 
+	 * @return the status of the notification
+	 */
 	public String getStatus() {
 		return status;
 	}
@@ -197,5 +201,8 @@ public class Notification {
 		else
 			return (title + " - " + teacher);
 	}
-
+	
+	public String toFileString() {
+		return title + "; " + numBooks + "; " + teacher + "; " + room + "; " + borrow + "; " + status + "\n";
+	}
 }

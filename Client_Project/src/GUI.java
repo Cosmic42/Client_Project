@@ -4,7 +4,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.awt.event.*;
+
 import javax.swing.event.*;
 import javax.swing.*;
 
@@ -735,7 +737,7 @@ public class GUI extends JFrame {
 	 */
 	public void update(){
 		if(!scrollList.isSelectionEmpty()){
-			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
+			viewNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNumView());
 			viewRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
 			viewPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
 			viewISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
@@ -743,11 +745,25 @@ public class GUI extends JFrame {
 			viewGrade.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getGrade());
 
 			modName.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getName());
-			modNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNum());
+			modNum.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getNumView());
 			modRoom.setText(((InventoryObject) filter.elementAt(((scrollList.getSelectedIndex())))).getRoom());
 			modPrice.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getPrice());
 			modISBN.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getISBN());
 			modGrade.setText(((InventoryObject) filter.elementAt((scrollList.getSelectedIndex()))).getGrade());
+			try
+			{
+			    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+			    String filename= "Database/database.txt";
+			    FileWriter fw = new FileWriter(filename,false); //the true will append the new data
+			    for(InventoryObject line:database)
+			    	fw.write(line.toFileString());//appends the string to the file
+			    fw.close();
+			}
+			catch(IOException ioe)
+			{
+			    System.err.println("IOException: " + ioe.getMessage());
+			}
+
 		}
 	}
 	
@@ -808,16 +824,21 @@ public class GUI extends JFrame {
 		
 		public void actionPerformed(ActionEvent event) {
 			int choice = 0;
+			String[] modNumString = modNum.getText().split("/"); 
 			if(!scrollList.isSelectionEmpty()){
+				
 				if(event.getSource() == modName){
-					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modName.getText());
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setName(modName.getText());
 					updateJList();
 				}
+				
 				if(event.getSource() == modNum)
-					if(modNum.getText().matches("[-+]?\\d*\\.?\\d+")
+					if(modNum.getText().contains("/") 
+							&& modNumString[0].matches("[-+]?\\d*\\.?\\d+")
+							&& modNumString[1].matches("[-+]?\\d*\\.?\\d+")
 							&& !modNum.getText().contains(".") 
-							&& Integer.parseInt(modNum.getText()) >=0)
-						database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modNum.getText());
+							&& Integer.parseInt(modNumString[0]) >=0)
+						database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(modNumString);
 					else
 						JOptionPane.showMessageDialog(null, "Error: Invalid Number", "Error", JOptionPane.ERROR_MESSAGE);
 				
@@ -830,11 +851,11 @@ public class GUI extends JFrame {
 				if(event.getSource() == modGrade)
 					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setGrade(modGrade.getText());
 		
-				if(event.getSource() == plusBook)
-					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())+1 + ""));
+				if(event.getSource() == plusBook && Integer.parseInt(modNumString[0])+1 <= Integer.parseInt(modNumString[1]))
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(new String[]{Integer.parseInt(modNumString[0])+1 +"", modNumString[1]});
 				
-				if(event.getSource() == minusBook && Integer.parseInt(modNum.getText())-1 >= 0)
-					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum((Integer.parseInt(modNum.getText())-1 + ""));
+				if(event.getSource() == minusBook && Integer.parseInt(modNumString[0])-1 >= 0)
+					database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).setNum(new String[]{Integer.parseInt(modNumString[0])-1 +"", modNumString[1]});
 		
 				if(event.getSource() == deleteBook){
 					choice = JOptionPane.showConfirmDialog(null, "Delete Book from Database?\nWarning: Cannot be undone"
@@ -859,7 +880,7 @@ public class GUI extends JFrame {
 							    String filename= "Database/Notifications.txt";
 							    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
 							    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
-							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow\n" + "; false");//appends the string to the file
+							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Borrow" + "; Pending\n");//appends the string to the file
 							    fw.close();
 							}
 							catch(IOException ioe)
@@ -868,7 +889,7 @@ public class GUI extends JFrame {
 							}
 						}
 					}else{
-						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Error: Not a valid number/nor no valid room entered", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					
 				}
@@ -886,7 +907,7 @@ public class GUI extends JFrame {
 							    String filename= "Database/Notifications.txt";
 							    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
 							    String title = database.get(database.indexOf((InventoryObject) scrollList.getSelectedValue())).getName();
-							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return\n" + "; false");//appends the string to the file
+							    fw.write(title + "; " + Integer.parseInt(checkOut.getText()) + "; "+ user + "; "+ requestRoom.getText() +"; "+ "to Return" + "; Pending\n");//appends the string to the file
 							    fw.close();
 							}
 							catch(IOException ioe)
@@ -895,7 +916,7 @@ public class GUI extends JFrame {
 							}
 						}
 					}else
-						JOptionPane.showMessageDialog(null, "Error: Not a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Error: Not a valid number\nor no valid room entered", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 					
@@ -908,8 +929,10 @@ public class GUI extends JFrame {
 													 addGrade.getText() + "\t" +
 													 addRoom.getText() + "\t" +
 													 addNum.getText() + "\t" +
+													 addNum.getText() + "\t" +
 													 addPrice.getText() + "\t" + 
 													 addISBN.getText() + "\t"));
+					
 				}else if(!(choice == JOptionPane.CANCEL_OPTION)){
 					JOptionPane.showMessageDialog(null, "Error: At least on field not\nfilled or invalid", "Error", JOptionPane.ERROR_MESSAGE);
 				}
@@ -955,7 +978,7 @@ public class GUI extends JFrame {
 				else
 					set = inventory+requested;
 				if (foundIndex >= 0 && set >= 0){
-					requestedBook.setNum(""+set);
+					requestedBook.setNum(requestedBook.getNum());
 					requestList.get(requestList.indexOf((Notification) scrollRequest.getSelectedValue())).setStatus("Accepted");
 					try
 					{
@@ -1012,6 +1035,20 @@ public class GUI extends JFrame {
 					JOptionPane.showMessageDialog(null, "Error: Request still Pending", "Error", JOptionPane.ERROR_MESSAGE);
 				else{
 					requestList.remove(requestList.indexOf((Notification) scrollRequest.getSelectedValue()));
+					try
+					{
+					    //String filename= "S:\\SShared\\Stansbury\\Hannah\\Notifications.txt";
+					    String filename= "Database/Notifications.txt";
+					    FileWriter fw = new FileWriter(filename,false); //the true will append the new data
+					    for(Notification line:requestList)
+					    	fw.write(line.toFileString());//appends the string to the file
+					    fw.close();
+					}
+					catch(IOException ioe)
+					{
+					    System.err.println("IOException: " + ioe.getMessage());
+					}
+
 					updateJListRequest();
 					refreshRequest();
 				}

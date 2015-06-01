@@ -9,7 +9,7 @@ public class InventoryObject {
 	private String name;
 	private String grade;
 	private String room;
-	private String num;
+	private String[] num;
 	private String price;
 	private String ISBN;
 	/**
@@ -17,14 +17,16 @@ public class InventoryObject {
 	 * @param line
 	 */
 	public InventoryObject(String line){
+		num = new String[2];
 		String[] data = line.split("\t");
 		name = data[0];
 		grade = data[1];
 		room = data[2];
-		num = data[3];
-		price = data[4];
-		ISBN = data[5];
+		num[0] = data[3]; num[1] = data[4];
+		price = data[5];
+		ISBN = data[6];
 	}
+	
 	/**
 	 * Returns the name as the conversion from object to string
 	 * 
@@ -32,6 +34,16 @@ public class InventoryObject {
 	public String toString(){
 		return name;
 	}
+	
+	public String toFileString(){
+		return name + "\t" + 
+	           grade + "\t" +
+			   room + "\t" +
+	           num[0] + "\t" + num[1] + "\t" +
+			   price + "\t" + 
+	           ISBN + "\n";
+	}
+	
 	/**
 	 * 
 	 * @return the name of the book
@@ -77,18 +89,52 @@ public class InventoryObject {
 	}
 	/**
 	 * 
-	 * @return the total number of books.
+	 * @return the number of books vs totla number of books in viewable form.
 	 */
-	public String getNum() {
-		return num;
+	public String getNumView() {
+		return num[0] + "/" + num[1];
 	}
+	
 	/**
 	 * 
-	 * @param num
+	 * @return the current number in inventory
+	 */
+	public String getNum() {
+		return num[0];
+	}
+	
+	/**
+	 * 
+	 * @return the total number in inventory
+	 */
+	public String getNumTotal() {
+		return num[1];
+	}
+
+	/**
+	 * Sets the total
+	 * @param num array that stores the total and the current num in inventory
+	 */
+	public void setNumTotal(String num) {
+		this.num[1] = num;
+	}
+
+	/**
+	 * Sets the current num in inventory
+	 * @param num array that stores the total and the current num in inventory
 	 */
 	public void setNum(String num) {
+		this.num[0] = num;
+	}
+	
+	/**
+	 * Sets both the total and current num in inventory
+	 * @param num array that stores the total and the current num in inventory
+	 */
+	public void setNum(String[] num) {
 		this.num = num;
 	}
+	
 	/**
 	 * 
 	 * @return the price of the book.
@@ -96,6 +142,7 @@ public class InventoryObject {
 	public String getPrice() {
 		return price;
 	}
+	
 	/**
 	 * 
 	 * @param price

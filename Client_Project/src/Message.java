@@ -85,4 +85,5 @@ public class Message {
 	public String toString(){
 		return notification.getTitle() + " - " + notification.getNumBooks() + " copies";
 	}
+
 }
