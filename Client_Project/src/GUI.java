@@ -245,8 +245,10 @@ public class GUI extends JFrame {
 	 */
 	public void setCheckOutTab(){
 		JPanel modData = new JPanel();
+		JPanel buttons = new JPanel();
 		JLabel label1 = new JLabel("# of Books: ");
 		JLabel label2 = new JLabel("To/From Room: ");
+		
 		checkOutButton.addActionListener(handler);
 		returnRequest.addActionListener(handler);
 		viewMessages.addActionListener(handler);
@@ -294,11 +296,11 @@ public class GUI extends JFrame {
                 .addComponent(requestRoom)
                 .addComponent(returnRequest)));
  
-                
+        buttons.add(viewMessages);
 		setGrid(c, 0, 2, 1, 0);
         modData.add(information, c);
         setGrid(c, 0, 3, 1, 0);
-		modData.add(viewMessages, c);
+		modData.add(buttons, c);
         setGrid(c, 0, 4, 1, 1);
 		modData.add(new JLabel(""), c);
 		checkOutTab.setLayout(new GridLayout(1, 2));		
@@ -323,7 +325,7 @@ public class GUI extends JFrame {
 		JLabel label4 = new JLabel("Price: ");
 		JLabel label5 = new JLabel("ISBN: ");
 		JLabel label6 = new JLabel("Grade: ");
-
+		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		setGrid(c, 0, 2, 1, 1);
@@ -349,6 +351,7 @@ public class GUI extends JFrame {
         
 		//GroupLayout to set the information
 		JPanel information = new JPanel();
+		JPanel buttons = new JPanel();
 		GroupLayout layout = new GroupLayout(information);
 		information.setLayout(layout);
 
@@ -397,15 +400,12 @@ public class GUI extends JFrame {
                  .addComponent(label5)
                  .addComponent(modISBN)));
 
-		setGrid(c, 0, 1, 1, 0);
+        buttons.add(addBook); buttons.add(deleteBook); buttons.add(viewRequests);
+        setGrid(c, 0, 1, 1, 0);
         modData.add(information, c);
-		setGrid(c, 0, 2, 1, 0);
-		modData.add(addBook, c);
-		setGrid(c, 0, 3, 1, 0);
-		modData.add(deleteBook, c);
-		setGrid(c, 0, 4, 1, 0);
-		modData.add(viewRequests, c);
-		setGrid(c, 0, 5, 1, 1);
+        setGrid(c, 0, 2, 1, 0);
+        modData.add(buttons, c);
+        setGrid(c, 0, 3, 1, 1);
 		modData.add(new JLabel(""), c);
 		modInventoryTab.setLayout(new GridLayout(1, 2));		
 		modInventoryTab.add(modData);
